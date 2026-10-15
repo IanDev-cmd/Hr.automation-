@@ -1,0 +1,48 @@
+# Sequel Support HR desk.
+# Single-page static site. Render serves index.html; there is no server,
+# database, or secret. Login stays in the browser.
+
+previews:
+  generation: automatic
+
+services:
+  - type: web
+    name: hr-automation
+    runtime: static
+    repo: https://github.com/IanDev-cmd/Hr.automation-
+    branch: main
+    region: frankfurt
+    autoDeployTrigger: commit
+    buildCommand: "echo Sequel Support HR desk"
+    staticPublishPath: .
+    buildFilter:
+      paths:
+        - index.html
+        - render.yaml
+      ignoredPaths:
+        - _serve.js
+    previews:
+      generation: automatic
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /index.html
+        name: Cache-Control
+        value: "no-cache"
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(), microphone=(), geolocation=()"
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
