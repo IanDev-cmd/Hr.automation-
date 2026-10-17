@@ -19,6 +19,8 @@ services:
       paths:
         - index.html
         - render.yaml
+        - sw.js
+        - photos/desk.jpg
       ignoredPaths:
         - _serve.js
     previews:

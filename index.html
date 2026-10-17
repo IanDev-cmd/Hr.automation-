@@ -6,7 +6,7 @@
 <title>Sequel Support · HR Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --magenta: #00b85c;
@@ -30,7 +30,7 @@
   body {
     font-family: Montserrat, "Segoe UI", sans-serif;
     color: var(--ink);
-    background: linear-gradient(155deg, #f3fff8 0%, #b8f6d6 32%, #3ee58a 68%, #00c45c 100%);
+    background: #123 url("photos/desk.jpg") center / cover no-repeat fixed;
   }
   button, input { font-family: inherit; }
   button { cursor: pointer; }
@@ -572,6 +572,33 @@
     background: #00b85c;
     box-shadow: 0 0 0 2px #fff;
   }
+  .dk-top-right { position: relative; }
+  .dk-notes {
+    position: absolute;
+    top: 46px;
+    right: 0;
+    width: 320px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(20, 24, 40, 0.16);
+    padding: 8px;
+    z-index: 8;
+  }
+  .dk-notes[hidden] { display: none !important; }
+  .dk-notes-h { margin: 4px 8px 8px; color: #8b919c; font: 600 11px Poppins, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+  .dk-notes button.item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .dk-notes button.item:hover { background: #f3fff8; }
+  .dk-notes button.item b { display: block; font: 600 13px Poppins, sans-serif; color: #1c1f27; }
+  .dk-notes button.item small { display: block; margin-top: 2px; color: #8b919c; font: 400 12px/1.35 Poppins, sans-serif; }
   .dk-user {
     border: 0;
     background: transparent;
@@ -685,6 +712,8 @@
   .dk-id { display: flex; flex-direction: column; min-width: 0; }
   .dk-id b { font: 600 13px/1.2 Poppins, sans-serif; color: #1c1f27; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .dk-id small { font: 400 11px/1.3 Poppins, sans-serif; color: #a0a6b2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dk-bar { display: block; height: 4px; margin-top: 5px; background: #e8fff2; border-radius: 99px; overflow: hidden; }
+  .dk-bar i { display: block; height: 100%; background: #0dd573; border-radius: 99px; }
   .dk-cell { text-align: center; font: 500 13px Poppins, sans-serif; color: #8b919c; white-space: nowrap; }
   .dk-kebab {
     width: 28px;
@@ -2029,11 +2058,484 @@
     .ps-white { margin-left: 0; padding: 48px 22px 28px; }
   }
 
+  .sc-head, .sc-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 46px 46px;
+    gap: 6px;
+    align-items: center;
+  }
+  .sc-head { margin: 0 0 8px; color: #9aa3b2; font: 600 10px Poppins, sans-serif; letter-spacing: .06em; }
+  .sc-row { margin: 0 0 6px; font: 500 12px/1.35 Poppins, sans-serif; color: #1d2433; }
+  .sc-row.flag { background: #fff6e0; border-radius: 4px; padding: 2px 4px; }
+  .sc-row input {
+    width: 46px;
+    border: 0;
+    background: #f1f5f8;
+    border-radius: 4px;
+    padding: 6px 0;
+    text-align: center;
+    font: 600 12px Poppins, sans-serif;
+    color: #1d2433;
+  }
+  #exec[hidden], #track[hidden] { display: none !important; }
+  body.in-exec { background: linear-gradient(155deg, #f3fff8 0%, #d9ffe9 45%, #7eebad 100%); overflow: auto; }
+  body.in-track { background: linear-gradient(160deg, #f3fff8 0%, #d9ffe9 40%, #7eebad 100%); overflow: auto; }
+  .ex, .tk {
+    min-height: 100vh;
+    font-family: Poppins, Montserrat, sans-serif;
+    color: #1d2433;
+    padding: 28px 28px 48px;
+  }
+  .ex-top, .tk-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .ex-top h1, .tk-top h1 { margin: 0; font: 700 28px/1.2 Poppins, sans-serif; }
+  .ex-top p, .tk-top p { margin: 4px 0 0; color: #6b7280; font-size: 14px; }
+  .ex-back, .tk-back {
+    border: 0; background: #fff; color: #067a3a; border-radius: 8px;
+    padding: 8px 12px; font: 600 13px Poppins, sans-serif; cursor: pointer;
+  }
+  .ex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .ex-card, .tk-card {
+    background: #fff; border-radius: 12px; padding: 18px 18px 16px;
+    box-shadow: 0 10px 24px rgba(6, 80, 40, .08);
+  }
+  .ex-card h2 { margin: 0 0 8px; font: 700 18px Poppins, sans-serif; }
+  .ex-card b { font-size: 28px; letter-spacing: -.4px; }
+  .ex-card span, .tk-mile small { display: block; color: #6b7280; font-size: 13px; margin-top: 4px; }
+  .ex-note { margin: 18px 0 0; color: #3d4650; font-size: 14px; }
+  .tk-wrap { width: min(560px, 100%); margin: 0 auto; }
+  .tk-mile {
+    display: flex; justify-content: space-between; gap: 12px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid #e8fff2;
+  }
+  .tk-mile b { font: 600 14px Poppins, sans-serif; }
+  .tk-pill { border-radius: 99px; padding: 4px 10px; font: 600 11px Poppins, sans-serif; background: #f3f4f6; color: #6b7280; }
+  .tk-pill.on { background: #e8fff2; color: #067a3a; }
+  @media (max-width: 800px) { .ex-grid { grid-template-columns: 1fr; } }
 
+  body.in-vetting[data-ux="cart"] { background: #c5d1cb; overflow: auto; }
+  body.in-vetting[data-ux="calc"] {
+    background:
+      linear-gradient(115deg, transparent 0 46%, rgba(255,255,255,.45) 46% 52%, transparent 52%),
+      linear-gradient(160deg, #e7fff3 0%, #8ed7ae 38%, #00a85c 100%);
+    overflow: auto;
+  }
+  body.in-vetting[data-ux="journey"] { background: #eef1ef; overflow: auto; }
+  #vetting.ux { display: block; min-height: 100vh; padding: 36px 20px 48px; overflow: visible; }
+  #vetting.ux[data-layout="calc"] { display: grid; place-items: center; }
+  #vetting.ux[data-layout="journey"] { padding: 0; background: #f4f6f5; }
+  #uxCart[hidden], #uxCalc[hidden], #uxJourney[hidden] { display: none !important; }
+
+  .ux-sheet {
+    width: min(1080px, 100%);
+    margin: 0 auto;
+    min-height: 680px;
+    background: #f3f4f2;
+    display: grid;
+    grid-template-columns: 1.38fr .78fr;
+    box-shadow: 0 22px 60px rgba(20, 40, 30, .16);
+    position: relative;
+  }
+  .ux-main { padding: 28px 26px 18px 32px; min-width: 0; }
+  .ux-brand { display: flex; align-items: center; gap: 12px; color: #2c2c2c; }
+  .ux-brand h1 { margin: 0; font: 600 22px Poppins, sans-serif; }
+  .ux-brand i { width: 1px; height: 18px; background: #cfcfcf; display: block; }
+  .ux-mark { width: 26px; height: 26px; display: block; }
+  .ux-mark svg { width: 26px; height: 26px; display: block; }
+  .ux-lead { margin: 8px 0 0; color: #8b948e; font: 400 13px/1.45 Poppins, sans-serif; }
+  #vetting.ux .vt-switch { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 16px 0 4px; }
+  #vetting.ux .vt-switch button {
+    border: 0; background: transparent; padding: 0 0 6px; cursor: pointer;
+    color: #8b948e; font: 600 13px Poppins, sans-serif;
+  }
+  #vetting.ux .vt-switch button.on { color: #067a3a; box-shadow: inset 0 -2px 0 #0dd573; }
+  .ux-search { display: block; border-bottom: 1px solid #e3e3e3; margin: 8px 0 14px; }
+  .ux-search input {
+    width: 100%; border: 0; background: transparent; padding: 8px 0;
+    font: 400 14px Poppins, sans-serif; color: #333;
+  }
+  #vetting.ux #vtCards { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow: auto; margin: 0; }
+  .cart-row { display: grid; grid-template-columns: 1fr 28px; align-items: center; background: #fff; border-radius: 4px; }
+  .cart-row.on { outline: 1px solid #0dd573; }
+  .cart-row.held { opacity: .55; }
+  .cart-hit {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1.3fr) 88px 92px 72px;
+    gap: 8px; align-items: center;
+    width: 100%; border: 0; background: transparent; text-align: left;
+    padding: 12px 6px 12px 14px; cursor: pointer; font: inherit; color: inherit;
+  }
+  .cart-ava { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.08); display: grid; place-items: center; }
+  .cart-ava svg { width: 46px; height: 46px; display: block; }
+  .cart-ava-plain { background: #d7efe2; box-shadow: none; }
+  .cart-copy b { display: block; font: 600 14px Poppins, sans-serif; color: #3a3a3a; }
+  .cart-copy small { display: block; color: #9aa0a6; font-size: 11px; margin-top: 2px; }
+  .cart-attr { color: #8a8a8a; font: 400 13px Poppins, sans-serif; }
+  .cart-step { display: inline-flex; align-items: center; gap: 8px; color: #616161; justify-content: center; }
+  .cart-step i {
+    width: 18px; height: 18px; border: 1px solid #cfcfcf; border-radius: 50%;
+    display: grid; place-items: center; font-style: normal; font-size: 12px; color: #888;
+  }
+  .cart-step b { font: 600 13px Poppins, sans-serif; min-width: 16px; text-align: center; }
+  .cart-price { font: 600 13px Poppins, sans-serif; color: #3f3f3f; text-align: right; }
+  .cart-x { border: 0; background: transparent; color: #b0b0b0; font-size: 18px; cursor: pointer; padding: 0; }
+  #vetting.ux #vtCards .vt-card {
+    display: flex; width: 100%; flex: none; background: #fff; color: #333;
+    border-radius: 4px; padding: 12px 14px; text-align: left; gap: 10px;
+  }
+  #vetting.ux #vtCards .vt-card .ava,
+  #vetting.ux #vtCards .vt-card .vt-snip,
+  #vetting.ux #vtCards .vt-card time,
+  #vetting.ux #vtCards .vt-card .vt-from { display: block; }
+  #vetting.ux #vtCards .vt-card .vt-accent { display: none; }
+  #vetting.ux #vtCards .vt-card.on { outline: 1px solid #0dd573; }
+  .ux-foot { display: flex; justify-content: space-between; align-items: center; padding: 18px 4px 6px; color: #5c6560; font: 500 14px Poppins, sans-serif; }
+  .ux-back { border: 0; background: transparent; color: #3f4944; cursor: pointer; font: 500 14px Poppins, sans-serif; padding: 0; }
+  .ux-foot b, .ux-sub b { color: #2a2a2a; font-weight: 700; }
+
+  .ux-side { background: #1c2420; color: #fff; padding: 36px 26px 84px; position: relative; min-height: 680px; display: flex; flex-direction: column; }
+  .ux-tab {
+    position: absolute; left: -26px; top: 78px; width: 26px;
+    background: #1c2420; border-radius: 14px 0 0 14px; padding: 14px 0;
+    display: flex; justify-content: center;
+  }
+  #vetting.ux .ux-tab .vt-nav { display: flex; flex-direction: column; gap: 10px; align-items: center; margin: 0; padding: 0; background: transparent; }
+  #vetting.ux .ux-tab .vt-nav button {
+    width: 8px; height: 8px; min-width: 8px; padding: 0; border: 0; border-radius: 50%;
+    background: #5c665f; color: transparent; font-size: 0; overflow: hidden; position: relative;
+  }
+  #vetting.ux .ux-tab .vt-nav button.on { background: #0dd573; width: 8px; }
+  #vetting.ux .ux-tab .vt-nav button svg,
+  #vetting.ux .ux-tab .vt-nav button span,
+  #vetting.ux .ux-tab .vt-badge { display: none !important; }
+  .ux-side h2 { margin: 8px 0 6px; text-align: center; color: #d6ffe8; font: 600 22px Poppins, sans-serif; }
+  .ux-folder { margin: 0; text-align: center; color: #8ea399; font: 600 12px Poppins, sans-serif; letter-spacing: .04em; }
+  .ux-blurb { margin: 8px 0 16px; text-align: center; color: #c5d0ca; font: 400 13px/1.45 Poppins, sans-serif; }
+  .ux-pick { margin: 0 0 8px; color: #9fb0a6; font: 500 13px Poppins, sans-serif; }
+  #vetting.ux .ux-side .vt-dots { display: flex; flex-wrap: wrap; gap: 12px 16px; margin: 0 0 16px; padding: 0; }
+  #vetting.ux .ux-side .vt-dots button {
+    width: auto; height: auto; min-width: 0; padding: 0; border: 0; border-radius: 0;
+    background: transparent; color: #c5cec8; font: 600 13px Poppins, sans-serif; font-size: 13px;
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  #vetting.ux .ux-side .vt-dots button.on { width: auto; background: transparent; color: #fff; }
+  #vetting.ux .ux-side .vt-dots button i {
+    display: inline-block !important; width: 28px; height: 16px; border-radius: 99px;
+    background: #3a4440; position: relative;
+  }
+  #vetting.ux .ux-side .vt-dots button.on i { background: #0dd573; }
+  #vetting.ux .ux-side .vt-dots button.on i::after {
+    content: ""; position: absolute; width: 12px; height: 12px; border-radius: 50%;
+    background: #fff; top: 2px; right: 2px;
+  }
+  #vetting.ux .ux-side #vtRead { flex: 1; overflow: auto; max-height: 420px; }
+  #vetting.ux .ux-side .vt-block { background: #f6f7f4; color: #1d2433; border-color: transparent; }
+  #vetting.ux .ux-side .vt-block h3,
+  #vetting.ux .ux-side .vt-copy,
+  #vetting.ux .ux-side .vt-hint { color: #3a3a3a; }
+  .ux-checkout {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 68px;
+    border: 0; background: #0dd573; color: #10241c; cursor: pointer;
+    font: 700 16px Poppins, sans-serif;
+  }
+  .ux-checkout:hover { background: #0bb863; }
+
+  #uxCalc:not([hidden]) {
+    width: min(880px, 100%);
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    min-height: 540px;
+    background: #fff;
+    box-shadow: 0 24px 60px rgba(0, 50, 30, .18);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .ux-calc-left { padding: 28px 32px 24px; background: #fff; }
+  .ux-calc-kicker { margin: 0 0 8px; color: #0aa35a; font: 600 16px Poppins, sans-serif; }
+  .ux-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
+  .ux-chip { border: 0; background: #f3f6f4; color: #3d4742; border-radius: 99px; padding: 6px 10px; font: 600 12px Poppins, sans-serif; cursor: pointer; }
+  .ux-chip.on { background: #e5fff2; color: #067a3a; }
+  .ux-stack { display: block; border-bottom: 1px solid #ececec; padding: 12px 0 8px; }
+  .ux-stack span { display: block; color: #0aa35a; font: 600 13px Poppins, sans-serif; }
+  .ux-stack b, .ux-stack input, .ux-stack select {
+    display: block; width: 100%; border: 0; background: transparent;
+    font: 500 28px/1.2 Poppins, sans-serif; color: #9aa0a6; padding: 4px 0 0;
+  }
+  .ux-stack select { cursor: pointer; }
+  .ux-terms { list-style: none; margin: 14px 0 0; padding: 0; }
+  .ux-terms li { color: #8b948e; font: 400 13px Poppins, sans-serif; padding: 4px 0 4px 16px; position: relative; }
+  .ux-terms li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #d0d5d2; position: absolute; left: 0; top: 9px; }
+  .ux-terms li.on { color: #067a3a; }
+  .ux-terms li.on::before { background: #0dd573; }
+  .ux-pad { margin-top: 12px; }
+  .ux-pad p { margin: 0 0 6px; color: #6b7280; font-size: 12px; }
+  .ux-calc-right { display: grid; grid-template-rows: auto 1fr; background: #0c2f24; min-height: 100%; }
+  .ux-payband { display: flex; flex-direction: column; justify-content: center; }
+  .ux-stats { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 36px 28px; }
+  .ux-legend p { margin: 0 0 18px; display: flex; gap: 8px; color: #d5ddd8; font: 400 13px Poppins, sans-serif; }
+  .ux-legend em { display: block; font-style: normal; }
+  .ux-legend b { display: inline; color: #fff; font: 600 20px Poppins, sans-serif; }
+  .ux-legend small { margin-left: 6px; font: 400 13px Poppins, sans-serif; color: #b7c4be; }
+  .ux-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: none; }
+  .ux-donut { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+  .ux-donut i { width: 36px; height: 36px; border-radius: 50%; background: #0c2f24; display: block; }
+  .ux-payband { background: #00b85c; color: #fff; padding: 26px 28px 28px; }
+  .ux-payband small { display: block; font: 500 14px Poppins, sans-serif; }
+  .ux-payband strong { display: block; margin: 6px 0 4px; font: 600 42px/1 Poppins, sans-serif; letter-spacing: -.6px; }
+  .ux-payband em { display: block; font-style: normal; color: rgba(255,255,255,.88); font-size: 13px; margin-bottom: 16px; }
+  .ux-payband button {
+    border: 0; background: #fff; color: #0a3d28; min-width: 210px;
+    padding: 12px 16px; font: 600 14px Poppins, sans-serif; cursor: pointer;
+  }
+  .ux-warn { margin: 10px 0 0; color: #e8fff3; font-size: 12px; }
+
+  #uxJourney:not([hidden]) { display: block; min-height: 100vh; background: #f4f6f5; }
+  .ux-nav {
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    padding: 16px 28px; background: #fff;
+  }
+  .ux-nav .ux-brand { margin-right: auto; }
+  .ux-nav .ux-brand b { font: 700 15px Poppins, sans-serif; }
+  #uxJourney .vt-switch { margin: 0; gap: 16px; }
+  .ux-board {
+    width: min(1120px, calc(100% - 40px));
+    margin: 28px auto 48px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px 270px;
+    gap: 28px;
+    align-items: start;
+  }
+  .ux-hero { margin: 0 0 18px; font: 700 34px/1.15 Poppins, sans-serif; color: #1a1a1a; }
+  .ux-hero em { font-style: normal; color: #00b85c; }
+  .ux-range { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 99px; background: linear-gradient(90deg, #0dd573 var(--p), #e6e8e7 var(--p)); padding: 0 !important; margin-top: 14px; }
+  .ux-range::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #0dd573; }
+  .ux-card {
+    background: #fff; border-radius: 8px; box-shadow: 0 16px 40px rgba(20, 40, 30, .08);
+    padding: 22px 22px 18px;
+  }
+  .ux-card .kicker { margin: 0; text-align: center; color: #6b7280; font: 500 13px Poppins, sans-serif; }
+  .ux-card .figure { margin: 4px 0 12px; text-align: center; font: 600 40px/1 Poppins, sans-serif; color: #1a1a1a; }
+  .ux-line { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; color: #4b5563; font: 400 14px Poppins, sans-serif; }
+  .ux-go {
+    width: 100%; margin-top: 12px; border: 0; background: #00b85c; color: #fff;
+    padding: 12px 14px; font: 700 15px Poppins, sans-serif; cursor: pointer; border-radius: 2px;
+  }
+  .ux-detail { margin-top: 14px; max-height: 360px; overflow: auto; }
+  .ux-next-col h2 { margin: 0 0 12px; font: 600 16px Poppins, sans-serif; }
+  .ux-next {
+    width: 100%; display: grid; grid-template-columns: 1fr 58px; grid-template-rows: auto auto;
+    gap: 6px 10px; text-align: left; background: #fff; border: 0; border-radius: 12px;
+    padding: 14px; margin-bottom: 12px; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(20, 40, 30, .06);
+  }
+  .ux-next b { display: block; font: 600 14px Poppins, sans-serif; color: #1f2933; }
+  .ux-next small { display: block; color: #6b7280; font-size: 12px; margin-top: 3px; }
+  .ux-next-ava { grid-column: 2; grid-row: 1 / span 2; width: 58px; height: 58px; border-radius: 50%; overflow: hidden; }
+  .ux-next-ava svg { width: 58px; height: 58px; display: block; }
+  .ux-arrow { color: #9aa39c; font-size: 16px; }
+  @media (max-width: 980px) {
+    .ux-sheet, #uxCalc:not([hidden]), .ux-board { grid-template-columns: 1fr; }
+    .ux-tab { display: none; }
+    .cart-hit { grid-template-columns: 46px 1fr auto; }
+    .cart-attr, .cart-step { display: none; }
+  }
+
+  .file-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+  .file-tile { position: relative; width: 118px; flex: 0 0 auto; }
+  .file-face {
+    width: 100%; min-height: 132px; border: 0; background: #fff; border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(20, 40, 30, .08); padding: 16px 12px 12px;
+    text-align: left; cursor: pointer; color: #2a2a2a;
+  }
+  .file-ico { display: block; width: 34px; height: 40px; color: #8b919c; }
+  .file-ico svg { width: 34px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  .file-tile.is-mail .file-ico { color: #067a3a; }
+  .file-face b { display: block; margin-top: 12px; font: 600 12px/1.3 Poppins, sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-face small { display: block; margin-top: 4px; color: #9aa0a6; font: 400 11px Poppins, sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-hover {
+    display: none; position: absolute; inset: 0; border-radius: 8px; background: #0dd573;
+    align-items: center; justify-content: center; gap: 8px;
+  }
+  .file-tile:hover .file-hover, .file-tile:focus-within .file-hover { display: flex; }
+  .file-hover button { width: 28px; height: 28px; border: 0; background: transparent; color: #fff; padding: 0; cursor: pointer; }
+  .file-hover svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .docs-row.docs-tile-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .dk-notes .file-row { flex-direction: column; }
+  .dk-notes .file-tile { width: 100%; }
+  #vetting.ux .file-row { max-height: none; }
+
+  .peek { position: fixed; inset: 0; z-index: 70; }
+  .peek[hidden] { display: none !important; }
+  .peek-scrim { position: absolute; inset: 0; border: 0; background: rgba(16, 36, 28, .28); cursor: pointer; }
+  .peek-card {
+    position: absolute; top: 0; right: 0; height: 100%; width: min(440px, 100%);
+    background: #fff; box-shadow: -16px 0 40px rgba(16, 36, 28, .16);
+    padding: 22px 26px 32px; overflow: auto; animation: peekIn .22s ease;
+  }
+  .peek.full .peek-card { width: 100%; }
+  .peek.full .peek-mail { width: min(680px, 100%); margin: 24px auto 0; }
+  @keyframes peekIn { from { transform: translateX(28px); } to { transform: none; } }
+  .peek-tools { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 18px; }
+  .peek-tools button {
+    border: 0; background: #f3f6f4; color: #1c2420; border-radius: 8px;
+    padding: 8px 12px; font: 600 13px Poppins, sans-serif; cursor: pointer;
+  }
+  .peek-tools button:hover { background: #e5fff2; color: #067a3a; }
+  .peek-mail header { display: flex; align-items: center; gap: 12px; }
+  .peek-ava { width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: #f3f6f4; display: grid; place-items: center; flex: none; }
+  .peek-ava svg { width: 52px; height: 52px; display: block; }
+  .peek-mail header b { display: block; font: 600 16px Poppins, sans-serif; color: #1a1a1a; }
+  .peek-mail header time { display: block; margin-top: 2px; color: #9aa0a6; font: 400 12px Poppins, sans-serif; }
+  .peek-mail h2 { margin: 22px 0 8px; font: 600 18px/1.35 Poppins, sans-serif; color: #1a1a1a; }
+  .peek-mail p { margin: 0; color: #4b5563; font: 400 15px/1.55 Poppins, sans-serif; white-space: pre-wrap; }
+
+  html,
+  body,
+  body.in-app,
+  body.in-screen,
+  body.in-vetting,
+  body.in-vetting[data-ux="cart"],
+  body.in-vetting[data-ux="calc"],
+  body.in-vetting[data-ux="journey"],
+  body.in-menu,
+  body.in-exec,
+  body.in-track {
+    background: #123 url("photos/desk.jpg") center / cover no-repeat fixed;
+  }
+  .mh { background: transparent; }
+  #vetting.ux,
+  #vetting.ux[data-layout="calc"],
+  #vetting.ux[data-layout="journey"],
+  #uxJourney:not([hidden]) { background: transparent; }
+
+  .gate {
+    position: fixed; inset: 0; z-index: 40; color: #fff; overflow: hidden;
+    font-family: Montserrat, sans-serif;
+  }
+  .gate[hidden] { display: none !important; }
+  .gate-nav {
+    position: absolute; top: 28px; left: 40px; right: 36px; z-index: 3;
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  }
+  .gate-brand { font: 600 22px Montserrat, sans-serif; letter-spacing: -0.02em; }
+  .gate-links { display: flex; gap: 36px; }
+  .gate-links button, .gate-ham, .gate-side button, .gate-social a, .gate-enter, .gate-film button, .gate-drop button {
+    border: 0; background: transparent; color: #fff; cursor: pointer; font: 500 14px Montserrat, sans-serif; padding: 0;
+  }
+  .gate-links button.on { text-decoration: underline; text-underline-offset: 6px; }
+  .gate-tools { justify-self: end; }
+  .gate-ham { width: 36px; height: 28px; display: grid; align-content: center; gap: 6px; }
+  .gate-ham span { display: block; height: 1.5px; width: 22px; background: #fff; }
+  .gate-drop {
+    position: absolute; top: 72px; right: 36px; z-index: 4;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+    background: rgba(12, 24, 28, 0.55); border-radius: 12px; padding: 16px 18px;
+  }
+  .gate-drop[hidden] { display: none !important; }
+  .gate-side {
+    position: absolute; left: 28px; top: 50%; transform: translateY(-50%); z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 22px;
+  }
+  .gate-dots { display: flex; flex-direction: column; gap: 12px; }
+  .gate-dots button { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.45); }
+  .gate-dots button.on { background: #fff; }
+  .gate-scroll {
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    letter-spacing: 0.28em; font: 500 11px Montserrat, sans-serif; background: transparent; color: #fff;
+  }
+  .gate-copy { position: absolute; left: 11%; top: 46%; transform: translateY(-54%); z-index: 2; max-width: 520px; }
+  .gate-num {
+    margin: 0; font: 500 clamp(84px, 11vw, 128px)/0.8 "Cormorant Garamond", Georgia, serif;
+    letter-spacing: -0.03em;
+  }
+  .gate-copy h1 {
+    margin: 10px 0 28px; font: 500 clamp(42px, 5vw, 64px)/1.02 "Cormorant Garamond", Georgia, serif;
+  }
+  .gate-enter {
+    min-width: 148px; height: 46px; padding: 0 22px;
+    border: 1px solid rgba(255,255,255,0.9); font: 500 15px Montserrat, sans-serif;
+  }
+  .gate-enter:hover { background: rgba(255,255,255,0.12); }
+  .gate-social {
+    position: absolute; right: 28px; top: 50%; transform: translateY(-50%); z-index: 2;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .gate-social a {
+    width: 28px; height: 28px; display: grid; place-items: center;
+    border: 1px solid rgba(255,255,255,0.7); border-radius: 50%;
+  }
+  .gate-social svg { width: 13px; height: 13px; fill: #fff; }
+  .gate-film {
+    position: absolute; left: 50%; bottom: 54px; transform: translateX(-50%); z-index: 2;
+    display: flex; gap: 8px; padding: 12px;
+    background: rgba(255,255,255,0.16); border-radius: 14px;
+  }
+  .gate-film button {
+    display: flex; align-items: center; gap: 10px; width: 196px;
+    text-align: left; border-radius: 10px; padding: 6px;
+  }
+  .gate-film img { width: 74px; height: 52px; object-fit: cover; border-radius: 6px; flex: none; }
+  .gate-film b { display: block; font: 600 12px/1.2 Montserrat, sans-serif; }
+  .gate-film small { display: block; margin-top: 2px; font: 400 11px Montserrat, sans-serif; opacity: 0.85; }
+  .gate-film button.on { background: rgba(255,255,255,0.94); color: #1a1a1a; }
+  .gate-en {
+    position: absolute; right: 28px; bottom: 22px; z-index: 2;
+    font: 600 12px Montserrat, sans-serif; letter-spacing: 0.08em;
+  }
+  @media (max-width: 860px) {
+    .gate-links, .gate-side, .gate-social { display: none; }
+    .gate-copy { left: 24px; right: 24px; max-width: none; }
+    .gate-film { width: calc(100% - 32px); overflow: auto; }
+    .gate-film button { width: 168px; flex: none; }
+  }
 </style>
 </head>
 <body>
-  <main class="stage">
+  <section id="gate" class="gate" aria-label="Sequel Support">
+    <header class="gate-nav">
+      <div class="gate-brand">Sequel</div>
+      <nav class="gate-links" aria-label="Primary">
+        <button type="button" data-gate="0">Home</button>
+        <button type="button" data-gate="1">Journal</button>
+        <button type="button" data-gate="2">Homes</button>
+      </nav>
+      <div class="gate-tools">
+        <button type="button" class="gate-ham" id="gateHam" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </header>
+    <div class="gate-drop" id="gateMenu" hidden>
+      <button type="button" data-gate="0">Home</button>
+      <button type="button" data-gate="1">Journal</button>
+      <button type="button" data-gate="2">Homes</button>
+      <button type="button" id="gateEnterMenu">Enter</button>
+    </div>
+    <div class="gate-side">
+      <div class="gate-dots" id="gateDots">
+        <button type="button" data-gate="0" aria-label="Mayfield Lodge"></button>
+        <button type="button" data-gate="1" aria-label="Rainbow Lodge"></button>
+        <button type="button" data-gate="2" aria-label="Fernleigh House"></button>
+        <button type="button" data-gate="3" aria-label="Sequel Support"></button>
+      </div>
+      <button type="button" class="gate-scroll" id="gateNext">Scroll down</button>
+    </div>
+    <div class="gate-copy">
+      <p class="gate-num" id="gateNum">02</p>
+      <h1 id="gateTitle">And so the<br>hiring<br>begins.....</h1>
+      <button type="button" class="gate-enter" id="gateEnter">Enter</button>
+    </div>
+    <div class="gate-social">
+      <a href="https://www.sequelsupport.co.uk" aria-label="Sequel Support"><svg viewBox="0 0 24 24"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4V10c0-.6.4-1 1-1z"/></svg></a>
+      <a href="https://www.sequelsupport.co.uk" aria-label="Sequel Support site"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="0.8"/></svg></a>
+      <a href="https://www.sequelsupport.co.uk" aria-label="Sequel Support web"><svg viewBox="0 0 24 24"><path d="M20 7.5c-.6.3-1.2.4-1.9.5.7-.4 1.2-1 1.4-1.8-.6.4-1.3.7-2.1.8A3.1 3.1 0 0 0 12 9.6c0 .2 0 .5.1.7-2.6-.1-4.9-1.4-6.4-3.3-.3.5-.4 1-.4 1.6 0 1.1.6 2 1.4 2.6-.5 0-1-.2-1.5-.4 0 1.5 1.1 2.8 2.5 3.1-.3.1-.6.1-.9.1-.2 0-.4 0-.6-.1.4 1.3 1.6 2.2 3 2.2A6.3 6.3 0 0 1 4 17.6 8.8 8.8 0 0 0 8.8 19c5.8 0 9-4.8 9-9v-.4c.6-.4 1.2-1 1.6-1.6z"/></svg></a>
+    </div>
+    <div class="gate-film" id="gateFilm">
+      <button type="button" data-gate="0"><img src="photos/desk.jpg" alt="" style="object-position:18% 42%"><span><b>Mayfield Lodge</b><small>Bournemouth</small></span></button>
+      <button type="button" data-gate="1" class="on"><img src="photos/desk.jpg" alt="" style="object-position:72% 36%"><span><b>Rainbow Lodge</b><small>Bournemouth</small></span></button>
+      <button type="button" data-gate="2"><img src="photos/desk.jpg" alt="" style="object-position:46% 70%"><span><b>Fernleigh House</b><small>Cornwall</small></span></button>
+      <button type="button" data-gate="3"><img src="photos/desk.jpg" alt="" style="object-position:82% 24%"><span><b>Sequel Support</b><small>Three homes</small></span></button>
+    </div>
+    <div class="gate-en">EN</div>
+  </section>
+  <main class="stage" hidden>
     <section class="card" id="card" aria-label="Sequel Support HR dashboard">
       <svg class="panel-svg" viewBox="0 0 671 406" preserveAspectRatio="none" aria-hidden="true">
         <defs>
@@ -2143,6 +2645,11 @@
         <button type="button" data-stage="interview">Interview</button>
         <button type="button" data-stage="vetting">Vetting</button>
         <button type="button" data-stage="signoff">Manager sign-off</button>
+        <button type="button" data-stage="health">Occupational health</button>
+        <button type="button" data-stage="payroll">Payroll handoff</button>
+        <button type="button" data-stage="score">Interview scores</button>
+        <button type="button" data-stage="executive">Directors</button>
+        <button type="button" data-stage="tracker">Candidate link</button>
       </div>
       <div class="mh-copy">
         <h1>HR Centre</h1>
@@ -2174,6 +2681,26 @@
         <svg viewBox="0 0 64 64"><rect x="16" y="10" width="32" height="44" rx="3"/><path d="M24 10v6h16v-6"/><path d="M24 30h16M24 38h10"/><circle cx="40" cy="44" r="6"/><path d="M38 44l1.4 1.6L43 41"/></svg>
         <b>Vetting desk</b>
         <span class="mh-more">Open the locker ›</span>
+      </button>
+      <button type="button" class="mh-card" data-go="health">
+        <svg viewBox="0 0 64 64"><path d="M32 14v36M14 32h36"/><rect x="10" y="10" width="44" height="44" rx="10"/></svg>
+        <b>Occupational health</b>
+        <span class="mh-more">Open the clearance ›</span>
+      </button>
+      <button type="button" class="mh-card" data-go="payroll">
+        <svg viewBox="0 0 64 64"><rect x="12" y="16" width="40" height="32" rx="4"/><path d="M12 26h40M20 38h10"/></svg>
+        <b>Payroll handoff</b>
+        <span class="mh-more">Open the starter pack ›</span>
+      </button>
+      <button type="button" class="mh-card" data-go="score">
+        <svg viewBox="0 0 64 64"><path d="M16 44V28M32 44V18M48 44V24"/><path d="M12 48h40"/></svg>
+        <b>Interview scores</b>
+        <span class="mh-more">Open the panel ›</span>
+      </button>
+      <button type="button" class="mh-card" data-go="executive">
+        <svg viewBox="0 0 64 64"><path d="M10 46V26l22-12 22 12v20"/><path d="M26 46V34h12v12"/></svg>
+        <b>Directors</b>
+        <span class="mh-more">Open the homes ›</span>
       </button>
     </div>
   </section>
@@ -2211,9 +2738,13 @@
             <input id="wsSearch" type="search" placeholder="Search" aria-label="Search candidates" autocomplete="off">
           </label>
           <div class="dk-top-right">
-            <button type="button" class="dk-bell" id="dkBell" aria-label="Alerts">
+            <button type="button" class="dk-bell" id="dkBell" aria-label="Alerts" aria-expanded="false" aria-controls="dkNotes">
               <svg viewBox="0 0 24 24"><path d="M6 16V10a6 6 0 1 1 12 0v6l1.5 2h-15z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
             </button>
+            <div class="dk-notes" id="dkNotes" hidden>
+              <p class="dk-notes-h">Alerts</p>
+              <div id="dkNoteList"></div>
+            </div>
             <div class="dk-user" id="whoBtn" role="button" tabindex="0">
               <span class="dk-ava" id="hiAva"></span>
               <b id="hiName">Kenny</b>
@@ -2328,37 +2859,71 @@
     </div>
   </section>
 
-  <section id="vetting" class="vt" hidden>
-    <button type="button" class="cs-free" id="vtCompose">Log gap</button>
-    <div class="cs-stage">
-      <article class="cs-blue">
-        <div class="cs-logo" aria-hidden="true">
-          <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="14"/><circle cx="32" cy="32" r="6"/></svg>
+  <section id="vetting" class="vt ux" hidden data-layout="cart">
+    <div id="uxCart">
+      <div class="ux-sheet">
+        <div class="ux-main">
+          <div class="ux-brand">
+            <span class="ux-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="none" stroke="#1c2420" stroke-width="1.6"/><circle cx="16" cy="16" r="4" fill="none" stroke="#0dd573" stroke-width="1.6"/></svg></span>
+            <i></i>
+            <h1 id="uxCartTitle">Safeguarding file</h1>
+          </div>
+          <p class="ux-lead" id="csLead">Open a safeguarding file.</p>
+          <div class="vt-switch" role="group" aria-label="Desk sections">
+            <button type="button" data-ctx="vetting" class="on">Vetting</button>
+            <button type="button" data-ctx="offer">Offer</button>
+            <button type="button" data-ctx="signoff">Sign-off</button>
+            <button type="button" data-ctx="induction">Induction</button>
+            <button type="button" data-ctx="audit">Audit</button>
+            <button type="button" data-ctx="health">Health</button>
+            <button type="button" data-ctx="payroll">Payroll</button>
+            <button type="button" data-ctx="score">Scores</button>
+          </div>
+          <label class="ux-search"><input id="vtSearch" type="search" placeholder="Search the file" autocomplete="off"></label>
+          <div id="vtCards"></div>
+          <div class="ux-foot">
+            <button type="button" class="ux-back" id="vtHome">← Back to the queue</button>
+            <p>Subtotal: <b id="uxSub">0%</b></p>
+          </div>
         </div>
-        <h2>We Are <b>Sequel</b><b>Support</b></h2>
-        <p id="csBlurb">Children's homes vetting for Mayfield, Rainbow, and Fernleigh.</p>
-        <button type="button" class="cs-more" id="vtHome">Queue →</button>
-        <div class="vt-dots" id="vtDots"></div>
-      </article>
-      <article class="cs-white">
-        <h2 class="cs-hello">Hello!</h2>
-        <p class="cs-lead" id="csLead">Open a safeguarding file.</p>
-        <div class="vt-switch" role="group" aria-label="Vetting sections">
-          <button type="button" data-ctx="vetting" class="on">Vetting</button>
-          <button type="button" data-ctx="offer">Offer</button>
-          <button type="button" data-ctx="signoff">Sign-off</button>
-          <button type="button" data-ctx="induction">Induction</button>
-          <button type="button" data-ctx="audit">Audit</button>
+        <aside class="ux-side">
+          <div class="ux-tab"><nav class="vt-nav" id="vtNav" aria-label="Folders"></nav></div>
+          <h2 id="uxSideTitle">File details</h2>
+          <p class="ux-folder" id="uxFolder"></p>
+          <p class="ux-blurb" id="csBlurb">Children's homes vetting for Mayfield, Rainbow, and Fernleigh.</p>
+          <p class="ux-pick" id="uxPickLabel">Select home</p>
+          <div class="vt-dots" id="vtDots"></div>
+          <div class="cs-form" id="vtRead"></div>
+          <button type="button" class="ux-checkout" id="vtCompose">Log gap</button>
+        </aside>
+      </div>
+    </div>
+    <div id="uxCalc" hidden></div>
+    <div id="uxJourney" hidden></div>
+  </section>
+
+  <section id="exec" class="ex" hidden>
+    <div class="ex-top">
+      <div>
+        <h1>Three homes</h1>
+        <p id="exLead">Time to hire, open gaps, and DBS rechecks for the directors.</p>
+      </div>
+      <button type="button" class="ex-back" id="exHome">HR home</button>
+    </div>
+    <div class="ex-grid" id="exGrid"></div>
+    <p class="ex-note" id="exNote"></p>
+  </section>
+
+  <section id="track" class="tk" hidden>
+    <div class="tk-wrap">
+      <div class="tk-top">
+        <div>
+          <h1 id="tkName">Your application</h1>
+          <p id="tkLead">Milestones only. No documents or personal notes are shown here.</p>
         </div>
-        <nav class="vt-nav" id="vtNav"></nav>
-        <label class="cs-field">
-          <span>SEARCH</span>
-          <input id="vtSearch" type="search" placeholder="Candidate or document" autocomplete="off">
-        </label>
-        <div class="cs-picks" id="vtCards"></div>
-        <div class="cs-form" id="vtRead"></div>
-        <p class="cs-foot">Back to the queue? <button type="button" id="vtFoot">Open queue</button></p>
-      </article>
+        <button type="button" class="tk-back" id="tkHome">HR home</button>
+      </div>
+      <article class="tk-card" id="tkMiles"></article>
     </div>
   </section>
 
@@ -2540,6 +3105,224 @@ function toast(text) {
   toast._t = setTimeout(() => el.classList.remove("show"), 2800);
 }
 
+const inbox = [
+  {
+    id: "mail-sarah",
+    from: "Sarah Jenkins",
+    subject: "Reference for Joe Bloggs",
+    preview: "Dates and conduct confirmed. Eligible for rehire.",
+    at: "2026-10-17T14:10:00"
+  }
+];
+const noteFeed = [];
+const pushedTags = new Set();
+let swReg = null;
+
+function interviewWhen(p) {
+  const iv = p.interview;
+  if (!iv) return null;
+  const [hour, minute] = String(iv.start || "09:00").split(":").map(Number);
+  return new Date(iv.year || 2026, iv.month == null ? 9 : iv.month, iv.day || 1, hour || 0, minute || 0);
+}
+
+function upcomingMeetings() {
+  ensureInterviews();
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start.getTime() + 8 * 86400000);
+  return roster.filter((p) => {
+    const when = interviewWhen(p);
+    return when && when >= start && when < end;
+  });
+}
+
+function renderNotes() {
+  const list = document.getElementById("dkNoteList");
+  const bell = document.getElementById("dkBell");
+  if (bell) bell.classList.toggle("hot", noteFeed.length > 0 || roster.some((p) => p.missing && p.missing.length));
+  if (!list) return;
+  if (!noteFeed.length) {
+    list.innerHTML = `<p class="dk-notes-h">No alerts yet</p>`;
+    return;
+  }
+  list.innerHTML = `<div class="file-row">${noteFeed.map((note) => fileTile({
+    name: note.title,
+    size: note.body,
+    kind: note.kind === "mail" ? "mail" : "doc",
+    attrs: `data-note="${esc(note.tag)}"${note.kind === "mail" ? ` data-peek="mail" data-mail="${esc(note.tag)}" data-person="${esc(note.focus || "")}"` : ""}`
+  })).join("")}</div>`;
+}
+
+async function showOs(note) {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  const payload = { body: note.body, tag: note.tag, data: note };
+  try {
+    if (swReg) await swReg.showNotification(note.title, payload);
+    else new Notification(note.title, payload);
+  } catch (err) {
+    try { new Notification(note.title, payload); } catch (e) { /* desktop alerts unavailable */ }
+  }
+}
+
+function pushNote(note) {
+  if (pushedTags.has(note.tag)) return;
+  pushedTags.add(note.tag);
+  noteFeed.unshift(note);
+  renderNotes();
+  showOs(note);
+}
+function announcePeek(note) {
+  if (pushedTags.has(note.tag)) showOs(note);
+  else pushNote(note);
+}
+let peekState = null;
+function closePeek() {
+  const root = document.getElementById("peek");
+  if (!root) return;
+  root.hidden = true;
+  root.classList.remove("full");
+}
+function openPeek(ds, fullscreen) {
+  ensurePacks();
+  const person = roster.find((item) => item.id === (ds.person || focusId)) || roster[0];
+  if (ds.person) focusId = ds.person;
+  if (ds.doc) vtDocId = ds.doc;
+  if (ds.ref) vtRefId = ds.ref;
+  let name = person ? person.name : "File";
+  let when = "";
+  let subject = "Document";
+  let body = "";
+  let kind = "doc";
+  if (ds.peek === "mail" && ds.mail) {
+    const mail = inbox.find((item) => item.id === ds.mail);
+    if (mail) {
+      kind = "mail";
+      name = mail.from;
+      when = stampOf(mail.at);
+      subject = mail.subject;
+      body = mail.preview;
+    }
+  } else if (ds.peek === "ref" && person && person.pack) {
+    const ref = person.pack.refs.find((item) => item.id === ds.ref) || person.pack.refs[0];
+    if (ref) {
+      kind = "mail";
+      name = ref.name;
+      when = ref.verbal && ref.verbal.date ? ref.verbal.date : "Reference";
+      subject = ref.role;
+      body = ref.written || ref.extra || "No written reference has been returned yet.";
+    }
+  } else if (ds.peek === "doc" && person && person.pack) {
+    const doc = person.pack.docs.find((item) => item.id === ds.doc);
+    if (doc) {
+      when = doc.size || doc.status;
+      subject = doc.file || doc.title;
+      body = `${doc.title}\nStatus: ${doc.status}\n${doc.note || "Held in the safeguarding locker."}`;
+    }
+  } else if (ds.peek === "desk") {
+    when = person ? person.home : "";
+    subject = ds.title || "Document";
+    body = ds.sub || "";
+  }
+  peekState = { personId: person && person.id, docId: ds.doc || "", mailId: ds.mail || "", refId: ds.ref || "", kind, subject, body, name };
+  document.getElementById("peekName").textContent = name;
+  document.getElementById("peekWhen").textContent = when;
+  document.getElementById("peekSubject").textContent = subject;
+  document.getElementById("peekBody").textContent = body;
+  const ava = document.getElementById("peekAva");
+  ava.innerHTML = kind === "mail" && person ? avatarSvg(person) : `<span class="file-ico">${pdfGlyph()}</span>`;
+  const root = document.getElementById("peek");
+  root.classList.toggle("full", !!fullscreen);
+  root.hidden = false;
+  announcePeek({
+    tag: `peek-${kind}-${(person && person.id) || "desk"}-${ds.doc || ds.mail || ds.ref || subject}`,
+    kind: kind === "mail" ? "mail" : "doc",
+    title: kind === "mail" ? "Email opened" : "Document opened",
+    body: subject,
+    focus: person && person.id
+  });
+}
+function savePeekFile(ds) {
+  if (ds.person) focusId = ds.person;
+  ensurePacks();
+  if (ds.doc) { downloadDoc(ds.doc); return; }
+  if (ds.mail) {
+    const mail = inbox.find((item) => item.id === ds.mail);
+    if (mail) downloadText(`${mail.subject}.txt`, `From: ${mail.from}\n${mail.subject}\n\n${mail.preview}`);
+    return;
+  }
+  if (ds.ref) {
+    const person = roster.find((item) => item.id === focusId);
+    const ref = person && person.pack && person.pack.refs.find((item) => item.id === ds.ref);
+    if (ref) downloadText(`${ref.name}.txt`, `${ref.role}\n${ref.name}\n\n${ref.written || ref.extra || ""}`);
+    return;
+  }
+  if (ds.title || (peekState && peekState.subject)) {
+    const title = ds.title || peekState.subject;
+    const text = ds.sub || (peekState && peekState.body) || "";
+    downloadText(`${title}.txt`, text);
+  }
+}
+
+function pushMajorEvents() {
+  ensurePacks();
+  ensureInterviews();
+  inbox.forEach((mail) => {
+    pushNote({
+      tag: mail.id,
+      kind: "mail",
+      title: "Gmail received",
+      body: `${mail.from}: ${mail.subject}`,
+      focus: "joe"
+    });
+  });
+  roster.filter((p) => p.pack && p.pack.signoff && p.pack.signoff.signed).forEach((p) => {
+    pushNote({
+      tag: "sign-" + p.id,
+      kind: "sign",
+      title: "Manager signed",
+      body: `${p.pack.signoff.manager || "Emily Carter"} signed the pack for ${p.name}.`,
+      focus: p.id
+    });
+  });
+  const meetings = upcomingMeetings();
+  if (meetings.length) {
+    pushNote({
+      tag: "meet-week",
+      kind: "meet",
+      title: "Upcoming meetings",
+      body: meetings.map((p) => `${p.name} · ${interviewLabel(p)} ${p.interview.start}`).join(" · "),
+      focus: meetings[0].id
+    });
+  }
+}
+
+function openFromNote(note) {
+  if (!note) return;
+  if (!officer) officer = "Kenny";
+  if (note.kind === "mail" || String(note.tag || "").indexOf("mail-") === 0) {
+    focusId = note.focus || focusId;
+    openWorkspace();
+    openPeek({ peek: "mail", mail: note.tag, person: note.focus || focusId });
+    return;
+  }
+  if (note.kind === "sign") {
+    focusId = note.focus || focusId;
+    vtContext = "signoff";
+    vtFolder = "packet";
+    openVetting();
+    return;
+  }
+  if (note.kind === "meet") {
+    focusId = note.focus || focusId;
+    openInterview();
+    return;
+  }
+  openWorkspace();
+  const panel = document.getElementById("dkNotes");
+  if (panel) panel.hidden = false;
+  renderNotes();
+}
+
 function setMenu(open) {
   document.getElementById("menu").hidden = !open;
   document.getElementById("ham").setAttribute("aria-expanded", open ? "true" : "false");
@@ -2632,13 +3415,13 @@ let roster = [
   person({ id: "joe", name: "Joe Bloggs", home: "Mayfield Lodge", stage: "vetting", applied: "September 4th", percent: 60, phone: "07123 456789", email: "joe.bloggs@example.com", tone: "#f6c98a", skin: "#f3d2b5", shirt: "#7a2898", ring: "#f0b429", refs: [{ name: "Sarah Jenkins", done: true }, { name: "Mark Williams", done: false }], missing: ["Enhanced DBS", "Form 6 sign-off"] }),
   person({ id: "amira", name: "Amira Shah", home: "Rainbow Lodge", stage: "prescreen", applied: "September 18th", percent: 30, phone: "07900 112233", email: "amira.shah@example.com", tone: "#f2b8a0", skin: "#e8b89a", shirt: "#f07048", ring: "#f2b56b", refs: [{ name: "Priya Nair", done: false }, { name: "Owen Clarke", done: false }], missing: ["Driving licence", "Proof of address", "Gap explanation"] }),
   person({ id: "daniel", name: "Daniel Okonkwo", home: "Fernleigh House", stage: "interview", applied: "September 15th", percent: 45, phone: "07444 908172", email: "daniel.okonkwo@example.com", tone: "#d7c4a8", skin: "#c4a07a", shirt: "#1f6feb", ring: "#8ec5ff", refs: [{ name: "Helen Price", done: false }], missing: ["UK right to work"] }),
-  person({ id: "leah", name: "Leah Mensah", home: "Mayfield Lodge", stage: "interview", applied: "September 15th", percent: 40, phone: "07712 440918", email: "leah.mensah@example.com", tone: "#e7c3b0", skin: "#deb197", shirt: "#7a2898", ring: "#f2b56b", refs: [{ name: "Claire Holt", done: true }], missing: ["Second reference"] }),
+  person({ id: "leah", name: "Leah Mensah", home: "Mayfield Lodge", stage: "signoff", applied: "September 15th", percent: 40, phone: "07712 440918", email: "leah.mensah@example.com", tone: "#e7c3b0", skin: "#deb197", shirt: "#7a2898", ring: "#f2b56b", refs: [{ name: "Claire Holt", done: true }], missing: ["Second reference"] }),
   person({ id: "tom", name: "Tom Reeves", home: "Rainbow Lodge", stage: "intake", applied: "September 21st", percent: 15, phone: "07555 301144", email: "tom.reeves@example.com", tone: "#c9d7ee", skin: "#f0d2bc", shirt: "#3d4f8a", ring: "#b9d4ff", refs: [], missing: ["Pre-screen call"] })
 ];
 let deskTab = "queue";
 let apptId = "";
 let apptYear = 2026;
-let apptMonth = 8;
+let apptMonth = 9;
 let apptDay = 24;
 let apptTime = "10:00";
 let openKebab = "";
@@ -2790,6 +3573,13 @@ function onBook(event) {
   }
   p.notes = `Teams interview booked ${interviewLabel(p)} at ${apptTime}.`;
   toast(`Appointment booked for ${p.name}`);
+  pushNote({
+    tag: `meet-${p.id}-${apptYear}-${apptMonth}-${apptDay}-${apptTime}`,
+    kind: "meet",
+    title: "Upcoming meeting",
+    body: `${p.name} · ${interviewLabel(p)} at ${apptTime} · ${p.home}`,
+    focus: p.id
+  });
   closeAppt();
   deskTab = "interviews";
   renderDesk();
@@ -2864,8 +3654,30 @@ function docButton(label, attrs) {
   return `<span class="docs-side"><button type="button" class="docs-btn" ${attrs}>${esc(label)}</button></span>`;
 }
 
+function pdfGlyph() {
+  return `<svg viewBox="0 0 32 40" aria-hidden="true"><path d="M7 2h12l8 8v28H7z"/><path d="M19 2v8h8"/><path d="M11 22h10M11 28h7"/></svg>`;
+}
+function mailGlyph() {
+  return `<svg viewBox="0 0 32 40" aria-hidden="true"><rect x="4" y="10" width="24" height="16" rx="2"/><path d="M4 12l12 8 12-8"/></svg>`;
+}
+function fileTile(opts) {
+  const attrs = opts.attrs || "";
+  const eye = `<svg viewBox="0 0 24 24"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.4"/></svg>`;
+  const frame = `<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.3"/><path d="M4 16l4-3 3 2 3-4 6 5"/></svg>`;
+  const down = `<svg viewBox="0 0 24 24"><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/><path d="M5 19h14"/></svg>`;
+  return `<div class="file-tile ${opts.kind === "mail" ? "is-mail" : ""}">
+    <button type="button" class="file-face" ${attrs}><span class="file-ico">${opts.kind === "mail" ? mailGlyph() : pdfGlyph()}</span><b>${esc(opts.name)}</b><small>${esc(opts.size || "")}</small></button>
+    <span class="file-hover"><button type="button" aria-label="View" ${attrs}>${eye}</button><button type="button" aria-label="Full screen" data-peek-full="1" ${attrs}>${frame}</button><button type="button" aria-label="Download" data-savefile="1" ${attrs}>${down}</button></span>
+  </div>`;
+}
 function docLine(icon, title, sub, done, button) {
-  return `<div class="docs-row">${docGlyph(icon)}<span class="docs-copy"><b>${esc(title)}</b><small>${esc(sub)}</small></span>${done ? docCheck() : button}</div>`;
+  const tile = fileTile({
+    name: title,
+    size: sub,
+    kind: "doc",
+    attrs: `data-peek="desk" data-person="${esc(docsId)}" data-title="${esc(title)}" data-sub="${esc(sub)}"`
+  });
+  return `<div class="docs-row docs-tile-row">${tile}${done ? docCheck() : button}</div>`;
 }
 
 function leftText(count) {
@@ -3009,6 +3821,7 @@ function onDeskClick(event) {
     openKebab = "";
     if (act.dataset.act === "screen") openPrescreen();
     else if (act.dataset.act === "vet") { vtContext = "vetting"; vtFolder = "documents"; openVetting(); }
+    else if (act.dataset.act === "score") { vtContext = "score"; vtFolder = "panel"; openVetting(); }
     else openAppointment(focusId);
     return;
   }
@@ -3045,9 +3858,27 @@ function bindDeskOnce() {
   document.querySelectorAll(".dk-tabs [data-tab]").forEach((btn) => {
     btn.onclick = () => { closeDocs(); deskTab = btn.dataset.tab; closeAppt(); openKebab = ""; renderDesk(); };
   });
-  document.getElementById("dkBell").onclick = () => {
-    const rows = roster.filter((p) => p.missing && p.missing.length);
-    toast(rows.length ? `${rows.length} file${rows.length > 1 ? "s" : ""} still missing documents` : "No open alerts");
+  document.getElementById("dkBell").onclick = async () => {
+    const panel = document.getElementById("dkNotes");
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    document.getElementById("dkBell").setAttribute("aria-expanded", opening ? "true" : "false");
+    if (!opening) return;
+    if ("Notification" in window && Notification.permission === "default") {
+      await Notification.requestPermission();
+    }
+    if (!("Notification" in window) || Notification.permission !== "granted") {
+      toast("Desktop alerts are off. The list still opens here.");
+    }
+    pushMajorEvents();
+    renderNotes();
+  };
+  document.getElementById("dkNoteList").onclick = (event) => {
+    if (event.target.closest("[data-savefile], [data-peek-full]")) return;
+    const btn = event.target.closest("[data-note]");
+    if (!btn) return;
+    document.getElementById("dkNotes").hidden = true;
+    openFromNote(noteFeed.find((note) => note.tag === btn.dataset.note));
   };
   document.getElementById("addPop").onsubmit = onAddCandidate;
   document.getElementById("appt").addEventListener("click", (event) => {
@@ -3076,6 +3907,7 @@ function bindDeskOnce() {
 }
 
 function renderDesk() {
+  ensurePacks();
   if (deskTab === "interviews") ensureInterviews();
   const people = deskPeople();
   document.getElementById("hiName").textContent = (officer || "Kenny").split(" ")[0];
@@ -3091,9 +3923,10 @@ function renderDesk() {
   const addPop = document.getElementById("addPop");
   addPop.hidden = !showAdd;
   document.getElementById("deskRows").innerHTML = people.length ? people.map((p, index) => {
+    refreshPercent(p);
     const designation = deskTab === "interviews"
       ? `${IV_STATUS[p.interview.status] || "Booked"}${p.interview.start ? ` · ${p.interview.start}` : ""}`
-      : STAGE_META[p.stage].short;
+      : `${STAGE_META[p.stage].short} · ${p.percent}%`;
     const when = deskTab === "interviews" ? interviewLabel(p) : appliedLabel(p);
     const menu = openKebab === p.id ? "" : " hidden";
     return `
@@ -3101,7 +3934,7 @@ function renderDesk() {
         <span class="dk-num">${index + 1}</span>
         <span class="dk-who">
           <span class="dk-ava">${avatarSvg(p)}</span>
-          <span class="dk-id"><b>${esc(p.name)}</b><small>${esc(p.email || "No email yet")}</small></span>
+          <span class="dk-id"><b>${esc(p.name)}</b><small>${esc(p.email || "No email yet")}</small><span class="dk-bar" aria-hidden="true"><i style="width:${p.percent}%"></i></span></span>
         </span>
         <span class="dk-cell dk-docslot"><button type="button" class="dk-docs" data-docs="${p.id}" aria-label="Documents for ${esc(p.name)}"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v6h6"/><path d="M9 13h6M9 17h6"/></svg></button></span>
         <span class="dk-cell">${esc(designation)}</span>
@@ -3112,6 +3945,7 @@ function renderDesk() {
           <button type="button" data-act="screen" data-person="${p.id}">Pre-screen</button>
           <button type="button" data-act="book" data-person="${p.id}">Book interview</button>
           <button type="button" data-act="vet" data-person="${p.id}">Vetting desk</button>
+          <button type="button" data-act="score" data-person="${p.id}">Score panel</button>
         </div>
       </div>`;
   }).join("") : `<p class="dk-empty">No candidates match that search</p>`;
@@ -3126,29 +3960,58 @@ function renderWorkspace() {
   renderDesk();
 }
 
-function exportOfsted() {
-  const p = focusPerson();
-  const lines = [
+function bundleText(p) {
+  refreshPercent(p);
+  const pkg = payPackage(p);
+  const panel = evaluateScores(p.pack.scores.a, p.pack.scores.b);
+  return [
+    `OFSTED VERIFIED - SEQUEL SUPPORT - CANDIDATE ${p.id}`,
     "Sequel Support Ltd",
-    "Ofsted safeguarding audit log",
+    "Safer recruitment audit pack",
     `Candidate: ${p.name}`,
     `Home: ${p.home}`,
     `Stage: ${STAGE_META[p.stage].label}`,
     `Completion: ${p.percent}%`,
-    `Phone: ${p.phone || "n/a"}`,
-    `Email: ${p.email || "n/a"}`,
+    "Verified by: Emily Carter",
+    "Legal status: COMPLIANT_UNDER_CHILDRENS_HOMES_REGS_2015",
+    dbsRecheckLine(p),
+    `Sleep-in: £${pkg.rate.toFixed(2)} ${pkg.region}`,
+    `Gross package: £${pkg.gross.toFixed(2)}`,
+    `Panel average: ${panel.average_score}`,
+    `Consensus required: ${panel.requires_consensus_discussion ? "yes" : "no"}`,
+    `Health cleared: ${p.pack.health.cleared ? "yes" : "no"}`,
+    `Bank details submitted: ${p.pack.payroll.account ? "yes" : "no"}`,
+    `Key and phone signed: ${p.pack.payroll.keyPhone ? "yes" : "no"}`,
+    `Working Time Directive opt-out: ${p.pack.payroll.wtdOptOut ? "yes" : "no"}`,
     "Missing:",
     ...(p.missing.length ? p.missing.map((item) => `- ${item}`) : ["- none"]),
     "References:",
     ...(p.refs.length ? p.refs.map((r) => `- ${r.name}: ${r.done ? "verbally verified" : "outstanding"}`) : ["- none"])
-  ];
-  const blob = new Blob([lines.join("\n")], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `ofsted-${p.name.replace(/\s+/g, "-").toLowerCase()}.txt`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  toast("Ofsted audit log exported");
+  ].join("\n");
+}
+
+async function sha256Hex(text) {
+  const data = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(buf)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function exportOfsted() {
+  ensurePacks();
+  const p = focusPerson();
+  const body = bundleText(p);
+  const hash = await sha256Hex(body);
+  downloadText(`ofsted-${p.name.replace(/\s+/g, "-").toLowerCase()}.txt`, `${body}\nSHA-256: ${hash}\n`);
+  audit("bundle", `Ofsted pack compiled for ${p.name}`, p.id);
+  toast("Ofsted pack compiled");
+}
+
+function hideBoards() {
+  const exec = document.getElementById("exec");
+  const track = document.getElementById("track");
+  if (exec) exec.hidden = true;
+  if (track) track.hidden = true;
+  document.body.classList.remove("in-exec", "in-track");
 }
 
 function hideMenu() {
@@ -3163,7 +4026,87 @@ function openStage(id) {
   if (id === "interview") { openInterview(); return; }
   if (id === "vetting") { vtContext = "vetting"; vtFolder = "documents"; openVetting(); return; }
   if (id === "signoff") { vtContext = "signoff"; vtFolder = "packet"; openVetting(); return; }
+  if (id === "health") { vtContext = "health"; vtFolder = "fitness"; openVetting(); return; }
+  if (id === "payroll") { vtContext = "payroll"; vtFolder = "bank"; openVetting(); return; }
+  if (id === "score") { vtContext = "score"; vtFolder = "panel"; openVetting(); return; }
+  if (id === "executive") { openExec(); return; }
+  if (id === "tracker") { openTracker(false); return; }
   openWorkspace();
+}
+
+function renderExec() {
+  ensurePacks();
+  document.getElementById("exGrid").innerHTML = HOMES.map((home) => {
+    const people = roster.filter((p) => p.home === home);
+    people.forEach(refreshPercent);
+    const avg = people.length ? Math.round(people.reduce((sum, p) => sum + p.percent, 0) / people.length) : 0;
+    const gaps = people.filter((p) => p.pack && openGap(p)).length;
+    const dbsDue = people.filter((p) => {
+      if (!p.pack || !p.pack.dbsChecked) return false;
+      const days = Math.floor((Date.now() - new Date(`${p.pack.dbsChecked}T00:00:00`).getTime()) / 86400000);
+      return days >= 90;
+    }).length;
+    const peopleWord = `${people.length} candidate${people.length === 1 ? "" : "s"}`;
+    const gapWord = `${gaps} open gap${gaps === 1 ? "" : "s"}`;
+    const dbsWord = `${dbsDue} DBS recheck${dbsDue === 1 ? "" : "s"} due`;
+    return `<article class="ex-card"><h2>${esc(home)}</h2><b>${avg}%</b><span>${peopleWord} · ${gapWord} · ${dbsWord} · £${homeSleep(home)} sleep-in · ${esc(regionName(home))}</span></article>`;
+  }).join("");
+  const stages = {};
+  roster.forEach((p) => { stages[p.stage] = (stages[p.stage] || 0) + 1; });
+  const bottleneck = Object.entries(stages).sort((a, b) => b[1] - a[1])[0];
+  document.getElementById("exNote").textContent = `Bottleneck: ${STAGE_META[bottleneck[0]].label} (${bottleneck[1]}). For Abhay Shah and Shilen Raichura.`;
+}
+
+function openExec() {
+  closeDocs();
+  hideBoards();
+  hideMenu();
+  document.querySelector(".stage").hidden = true;
+  document.getElementById("workspace").hidden = true;
+  document.getElementById("prescreen").hidden = true;
+  document.getElementById("vetting").hidden = true;
+  document.getElementById("exec").hidden = false;
+  document.body.classList.remove("in-app", "in-screen", "in-vetting", "in-menu", "in-track");
+  document.body.classList.add("in-exec");
+  renderExec();
+}
+
+function renderTracker() {
+  ensurePacks();
+  ensureInterviews();
+  const p = roster.find((item) => item.id === focusId) || roster[0];
+  refreshPercent(p);
+  document.getElementById("tkName").textContent = p.name;
+  document.getElementById("tkLead").textContent = `${p.home} · ${p.percent}% of the statutory checks are complete.`;
+  const dbs = p.pack.docs.find((doc) => doc.id === "dbs");
+  const miles = [
+    ["Application received", true],
+    ["Pre-screen", p.stage !== "intake"],
+    ["Interview booked", !!(p.interview && p.interview.status)],
+    ["Documents verified", p.pack.docs.every((doc) => doc.status === "verified")],
+    ["References verbally logged", p.pack.refs.every((ref) => !ref.datesOnly && ref.verbal.legit)],
+    ["DBS Update Service", !!(dbs && dbs.status === "verified")],
+    ["Manager sign-off", !!p.pack.signoff.signed],
+    ["Occupational health", !!p.pack.health.cleared],
+    ["Offer sent", !!p.pack.offer.sent],
+    ["Induction complete", p.pack.induction.days.every((day) => day.attended)]
+  ];
+  document.getElementById("tkMiles").innerHTML = miles.map(([label, on]) => `<div class="tk-mile"><div><b>${esc(label)}</b></div><span class="tk-pill${on ? " on" : ""}">${on ? "Done" : "Pending"}</span></div>`).join("");
+}
+
+function openTracker(publicView) {
+  closeDocs();
+  hideBoards();
+  hideMenu();
+  document.querySelector(".stage").hidden = true;
+  document.getElementById("workspace").hidden = true;
+  document.getElementById("prescreen").hidden = true;
+  document.getElementById("vetting").hidden = true;
+  document.getElementById("track").hidden = false;
+  document.getElementById("tkHome").hidden = !!publicView;
+  document.body.classList.remove("in-app", "in-screen", "in-vetting", "in-menu", "in-exec");
+  document.body.classList.add("in-track");
+  renderTracker();
 }
 
 function paintMenuHits() {
@@ -3182,6 +4125,7 @@ function paintMenuHits() {
 
 function openMenu() {
   closeDocs();
+  hideBoards();
   document.querySelector(".stage").hidden = true;
   document.getElementById("workspace").hidden = true;
   document.getElementById("prescreen").hidden = true;
@@ -3195,6 +4139,7 @@ function openMenu() {
 
 function openWorkspace() {
   closeDocs();
+  hideBoards();
   if (!roster.some((p) => p.id === focusId)) focusId = "joe";
   hideMenu();
   document.querySelector(".stage").hidden = true;
@@ -3208,6 +4153,7 @@ function openWorkspace() {
   renderWorkspace();
 }
 function closeWorkspace() {
+  hideBoards();
   document.getElementById("prescreen").hidden = true;
   document.getElementById("vetting").hidden = true;
   document.body.classList.remove("in-screen", "in-vetting", "in-menu");
@@ -3253,6 +4199,10 @@ function screening() {
       care: false,
       shifts: false,
       sleep: false,
+      handling: null,
+      health: null,
+      adjust: false,
+      oh: false,
       date: "",
       time: ""
     };
@@ -3323,6 +4273,17 @@ function renderPrescreen() {
           ${checkRow("shifts", "Agrees to 24-hour shift patterns", s.shifts)}
           ${checkRow("sleep", "Agrees to sleep-ins", s.sleep)}
         </div>`
+    },
+    {
+      title: "Health",
+      lead: "Questions 18 to 21 on the telephone screen",
+      fields: `
+        <div class="ps-box">
+          ${ynRow("handling", "Fit for manual handling", s.handling)}
+          ${ynRow("health", "Health condition affecting 24-hour shifts", s.health)}
+          ${checkRow("adjust", "Reasonable adjustment under the Equality Act 2010", s.adjust)}
+          ${checkRow("oh", "Consent to an occupational health referral", s.oh)}
+        </div>`
     }
   ];
   const step = steps[psStep - 1];
@@ -3335,7 +4296,7 @@ function renderPrescreen() {
         <button type="button" id="psBack">Back</button>
         <button type="button" id="psBad">Unsuitable</button>
       </div>
-      <button class="ps-send" type="submit">${psStep === 4 ? "SEND" : "NEXT"}</button>
+      <button class="ps-send" type="submit">${psStep === 5 ? "SEND" : "NEXT"}</button>
     </div>`;
   const form = document.getElementById("psForm");
   form.querySelectorAll("[data-yn]").forEach((btn) => {
@@ -3354,7 +4315,8 @@ function renderPrescreen() {
     if (psStep === 2 && s.licence === false) { openWatch("No full UK driving licence"); return; }
     if (psStep === 1 && s.rtw === null) { toast("Confirm UK right to work"); return; }
     if (psStep === 2 && s.licence === null) { toast("Confirm the driving licence"); return; }
-    if (psStep < 4) { psStep += 1; renderPrescreen(); return; }
+    if (psStep < 5) { psStep += 1; renderPrescreen(); return; }
+    ensurePacks();
     const person = focusPerson();
     person.name = s.name || person.name;
     person.email = s.email || person.email;
@@ -3364,6 +4326,12 @@ function renderPrescreen() {
     person.steps = [true, true, false, false, false];
     person.confirmed = false;
     person.notes = `Pre-screen complete. Interview ${s.date} ${s.time}.`.trim();
+    if (person.pack && person.pack.health) {
+      person.pack.health.manualHandling = s.handling;
+      person.pack.health.fitShifts = s.health === false ? true : person.pack.health.fitShifts;
+      person.pack.health.adjustments = !!s.adjust;
+      if (s.oh) person.pack.health.referral = "referred";
+    }
     person.interview = Object.assign(person.interview || { scores: {}, files: [], interviewers: ["Kenny Ng", "Helen Price"] }, {
       status: "booked",
       when: `${s.date} ${s.time}`.trim(),
@@ -3393,7 +4361,7 @@ function readStep(s) {
   } else if (psStep === 3) {
     s.years = a.value.trim();
     s.setting = b.value.trim();
-  } else {
+  } else if (psStep === 4) {
     s.date = a.value.trim();
     s.time = b.value.trim();
   }
@@ -3409,6 +4377,7 @@ function openWatch(preset) {
 
 function openPrescreen() {
   closeDocs();
+  hideBoards();
   psStep = 1;
   hideMenu();
   document.querySelector(".stage").hidden = true;
@@ -3450,8 +4419,8 @@ function ensureInterviews() {
       status: p.held ? "held" : row[0],
       start: row[1],
       end: row[2],
-      day: 24,
-      month: 8,
+      day: { joe: 19, amira: 20, leah: 21, daniel: 22, tom: 23 }[p.id] || 20,
+      month: 9,
       year: 2026,
       home: p.home,
       interviewers: ["Kenny Ng", "Helen Price"],
@@ -3464,6 +4433,7 @@ function ensureInterviews() {
 
 function openInterview() {
   closeDocs();
+  hideBoards();
   ensureInterviews();
   deskTab = "interviews";
   hideMenu();
@@ -3505,9 +4475,162 @@ function deskName() {
   return (officer || "Kenny").trim() || "Kenny";
 }
 
+const SAFEGUARDING_IDS = [3, 7, 11, 14, 18, 21, 24, 27];
+const PANEL_QUESTIONS = [
+  "A young person refuses to come in at curfew.",
+  "A colleague uses a nickname the child dislikes.",
+  "A child discloses that a member of staff hurt them.",
+  "You disagree with a care plan in handover.",
+  "A parent arrives unannounced and demands access.",
+  "Two young people start a fight in the lounge.",
+  "A child is missing from the home at 11pm.",
+  "You are asked to cover a sleep-in at short notice.",
+  "A child damages their bedroom after bad news.",
+  "Medication is refused at the usual time.",
+  "A colleague restrains a child without a plan.",
+  "You notice a recording missing from the log.",
+  "A child asks you to keep a secret from the team.",
+  "You see a safeguarding shortcut in another home.",
+  "A young person is racist toward another child.",
+  "Handover is rushed and a risk is unclear.",
+  "A child wants to cook but has a fire-setting history.",
+  "The wrong dose of medication was signed for.",
+  "A visitor will not show identification.",
+  "A child is distressed about a family contact.",
+  "A child shows you a sexual message from an adult online.",
+  "You are tired at the end of a 24-hour shift.",
+  "A placing authority challenges your recording.",
+  "Staff talk about physical intervention as punishment.",
+  "A child absconds toward a busy road.",
+  "You find a weapon hidden in a bedroom.",
+  "A new starter's barred-list check is unclear.",
+  "Ofsted arrives and asks for this child's file."
+];
+
+function homeSleep(home) {
+  return home === "Fernleigh House" ? 60 : 63;
+}
+function regionName(home) {
+  return home === "Fernleigh House" ? "Cornwall" : "Bournemouth";
+}
 function payLine(type) {
   if (type === "Bank Staff") return { figure: "£14.00", unit: "an hour" };
   return { figure: "£27,300", unit: "a year" };
+}
+function payPackage(p) {
+  const offer = (p.pack && p.pack.offer) || {};
+  const type = offer.type || "Full-time";
+  const nightsPerWeek = Number(offer.nightsPerWeek || 2);
+  const statutory = homeSleep(p.home);
+  const typed = Number(offer.sleep);
+  const rate = Number.isFinite(typed) && typed > 0 ? typed : statutory;
+  const nights = nightsPerWeek * 52;
+  const allowance = nights * rate;
+  const bank = type === "Bank Staff";
+  return {
+    figure: bank ? "£14.00" : "£27,300",
+    unit: bank ? "an hour" : "a year",
+    statutory, rate, nights, allowance,
+    gross: 27300 + allowance,
+    region: regionName(p.home),
+    bank
+  };
+}
+function calcView(p) {
+  const pkg = payPackage(p);
+  const base = 27300;
+  const baseShare = pkg.gross ? Math.round(1000 * base / pkg.gross) / 10 : 0;
+  return { pkg, base, baseShare, sleepShare: Math.round((100 - baseShare) * 10) / 10 };
+}
+function paintCalcFigures() {
+  const gross = document.getElementById("uxGross");
+  if (!gross) return;
+  const view = calcView(activePerson());
+  document.getElementById("uxBaseAmt").textContent = "£" + view.base.toLocaleString("en-GB");
+  document.getElementById("uxSleepAmt").textContent = "£" + Math.round(view.pkg.allowance).toLocaleString("en-GB");
+  document.getElementById("uxBasePct").textContent = "(" + view.baseShare + "%)";
+  document.getElementById("uxSleepPct").textContent = "(" + view.sleepShare + "%)";
+  gross.textContent = "£" + Math.round(view.pkg.gross).toLocaleString("en-GB");
+  const donut = document.getElementById("uxDonut");
+  if (donut) donut.style.background = "conic-gradient(#b6f5d4 0 " + view.baseShare + "%, #0dd573 " + view.baseShare + "% 100%)";
+  const line = document.getElementById("uxNightsLine");
+  if (line) line.textContent = view.pkg.nights + " nights · £" + view.pkg.rate.toFixed(2) + " · " + view.pkg.region;
+}
+function blankScores(person) {
+  const a = {};
+  const b = {};
+  for (let q = 1; q <= 28; q++) { a[q] = ""; b[q] = ""; }
+  if (person && (person.id === "leah" || person.id === "joe")) {
+    for (let q = 1; q <= 28; q++) { a[q] = 4; b[q] = 4; }
+  }
+  if (person && person.id === "joe") { a[3] = 5; b[3] = 2; }
+  return { interviewer1: "Kenny Ng", interviewer2: "Helen Price", a, b, recording: "" };
+}
+function scoreMap(raw) {
+  const out = {};
+  for (let q = 1; q <= 28; q++) {
+    const n = Number(raw[q]);
+    out[q] = Number.isFinite(n) ? n : 0;
+  }
+  return out;
+}
+function sheetAnswered(raw) {
+  for (let q = 1; q <= 28; q++) {
+    if (raw[q] === "" || raw[q] == null) return false;
+  }
+  return true;
+}
+function evaluateScores(aRaw, bRaw) {
+  const a = scoreMap(aRaw);
+  const b = scoreMap(bRaw);
+  const answered = sheetAnswered(aRaw) && sheetAnswered(bRaw);
+  const discrepancies = [];
+  let total1 = 0;
+  let total2 = 0;
+  for (let q = 1; q <= 28; q++) {
+    total1 += a[q];
+    total2 += b[q];
+    const diff = Math.abs(a[q] - b[q]);
+    if (diff > 2) discrepancies.push({ question_id: q, is_safeguarding: SAFEGUARDING_IDS.includes(q), difference: diff, score_interviewer_1: a[q], score_interviewer_2: b[q] });
+  }
+  const requires = answered && (discrepancies.some((item) => item.is_safeguarding) || Math.abs(total1 - total2) > 10);
+  return {
+    interviewer_1_total: total1,
+    interviewer_2_total: total2,
+    average_score: Math.round(((total1 + total2) / 2) * 100) / 100,
+    discrepancies_found: answered ? discrepancies : [],
+    answered,
+    requires_consensus_discussion: requires,
+    can_proceed_to_offer: answered && !requires
+  };
+}
+function blankHealth() {
+  return { fitShifts: null, manualHandling: null, personalCare: null, adjustments: false, adjustmentNote: "", referral: "not-required", cleared: false };
+}
+function blankPayroll() {
+  return { bankName: "", sortCode: "", account: "", p45: false, starter: false, emergencyName: "", emergencyPhone: "", jobDescription: false, wtdOptOut: false, keyPhone: false };
+}
+function dbsRecheckLine(p) {
+  if (!p.pack || !p.pack.dbsChecked) return "Update Service has not been checked.";
+  const checked = new Date(p.pack.dbsChecked + "T00:00:00");
+  const days = Math.floor((Date.now() - checked.getTime()) / 86400000);
+  if (days >= 90) return `Last Update Service check ${p.pack.dbsChecked} is ${days} days ago. A 90-day recheck is due.`;
+  return `Last Update Service check ${p.pack.dbsChecked}. Next recheck in ${90 - days} days.`;
+}
+function refreshPercent(p) {
+  if (!p.pack) return p.percent || 0;
+  const bits = [];
+  p.pack.docs.forEach((doc) => bits.push(doc.status === "verified"));
+  bits.push(!openGap(p));
+  p.pack.refs.forEach((ref) => bits.push(!ref.datesOnly && ref.verbal && ref.verbal.legit));
+  const panel = evaluateScores(p.pack.scores.a, p.pack.scores.b);
+  const answered = Object.values(p.pack.scores.a).some((value) => value !== "" && value != null);
+  bits.push(answered && panel.can_proceed_to_offer);
+  bits.push(!!p.pack.signoff.signed);
+  bits.push(!!p.pack.health.cleared);
+  bits.push(!!(p.pack.payroll.jobDescription && p.pack.payroll.keyPhone && p.pack.payroll.p45));
+  p.percent = Math.round(100 * bits.filter(Boolean).length / bits.length);
+  return p.percent;
 }
 
 function companyMail(name) {
@@ -3527,8 +4650,8 @@ function gapRow(id, from, to, days, explanation) {
 function refRow(id, role, name, written, datesOnly, verbal) {
   return { id, role, name, written, datesOnly, extra: "", verbal: verbal || { date: "", notes: "", legit: false } };
 }
-function offerRow(name, type) {
-  return { type: type || "Full-time", sleep: "45.00", email: companyMail(name), sent: false, signed: false };
+function offerRow(name, type, home) {
+  return { type: type || "Full-time", sleep: homeSleep(home).toFixed(2), nightsPerWeek: 2, email: companyMail(name), sent: false, signed: false };
 }
 function blankSignoff() {
   return { checks: { identity: false, rtw: false, dbs: false, refs: false, health: false }, signed: false, manager: "", at: "" };
@@ -3653,9 +4776,19 @@ function buildPack(p) {
       refRow("character", "Character", "Not named", "", false)
     ]
   };
-  seed.offer = offerRow(p.name, p.id === "amira" ? "Bank Staff" : p.id === "daniel" ? "Senior Support Worker" : "Full-time");
+  seed.offer = offerRow(p.name, p.id === "amira" ? "Bank Staff" : p.id === "daniel" ? "Senior Support Worker" : "Full-time", p.home);
   seed.signoff = blankSignoff();
+  if (p.id === "leah") {
+    seed.signoff.checks = { identity: true, rtw: true, dbs: true, refs: true, health: true };
+    seed.signoff.signed = true;
+    seed.signoff.manager = "Emily Carter";
+    seed.signoff.at = "2026-10-16T15:04:00.000Z";
+  }
   seed.induction = blankInduction();
+  seed.health = p.id === "leah" ? Object.assign(blankHealth(), { fitShifts: true, manualHandling: true, personalCare: true, cleared: true, referral: "cleared" }) : blankHealth();
+  seed.payroll = blankPayroll();
+  seed.scores = blankScores(p);
+  seed.dbsChecked = p.id === "leah" ? "2026-06-01" : "2026-10-01";
   seed.archived = false;
   seed.starred = false;
   return seed;
@@ -3717,6 +4850,12 @@ function ensurePacks() {
     }
     if (!p.pack.signoff) p.pack.signoff = blankSignoff();
     if (!p.pack.induction) p.pack.induction = blankInduction();
+    if (!p.pack.health) p.pack.health = blankHealth();
+    if (!p.pack.payroll) p.pack.payroll = blankPayroll();
+    if (!p.pack.scores) p.pack.scores = blankScores(p);
+    if (!p.pack.dbsChecked) p.pack.dbsChecked = p.id === "leah" ? "2026-06-01" : "2026-10-01";
+    if (p.pack.offer && (p.pack.offer.sleep === "45.00" || p.pack.offer.sleep === "45")) p.pack.offer.sleep = homeSleep(p.home).toFixed(2);
+    if (p.pack.offer && !p.pack.offer.nightsPerWeek) p.pack.offer.nightsPerWeek = 2;
   });
 }
 
@@ -3786,6 +4925,30 @@ function foldersFor(ctx) {
     return [
       ["watch", "Watchlist", "inbox"],
       ["trail", "Audit trail", "star"],
+      ["bundle", "Inspection", "file"],
+      ["purge", "GDPR purge", "trash"],
+      ["settings", "Settings", "gear"]
+    ];
+  }
+  if (ctx === "health") {
+    return [
+      ["fitness", "Fitness", "inbox"],
+      ["adjust", "Adjustments", "star"],
+      ["referral", "Referral", "draft"],
+      ["settings", "Settings", "gear"]
+    ];
+  }
+  if (ctx === "payroll") {
+    return [
+      ["bank", "Starter", "inbox"],
+      ["agreements", "Agreements", "draft"],
+      ["settings", "Settings", "gear"]
+    ];
+  }
+  if (ctx === "score") {
+    return [
+      ["panel", "Panel", "inbox"],
+      ["flags", "Flags", "flag"],
       ["settings", "Settings", "gear"]
     ];
   }
@@ -3814,6 +4977,10 @@ function badgeFor(folder) {
   if (vtContext === "induction" && folder === "calendar") return peopleCount((p) => p.pack.induction.days.some((day) => !day.attended));
   if (vtContext === "induction" && folder === "assets") return peopleCount((p) => p.pack.induction.assets.some((asset) => !asset.signed));
   if (vtContext === "audit" && folder === "watch") return watchlist.length;
+  if (vtContext === "audit" && folder === "bundle") return peopleCount((p) => !p.pack.signoff.signed);
+  if (vtContext === "health" && folder === "fitness") return peopleCount((p) => !p.pack.health.cleared);
+  if (vtContext === "payroll" && folder === "bank") return peopleCount((p) => !p.pack.payroll.p45 || !p.pack.payroll.keyPhone);
+  if (vtContext === "score" && folder === "flags") return peopleCount((p) => evaluateScores(p.pack.scores.a, p.pack.scores.b).requires_consensus_discussion);
   return 0;
 }
 
@@ -3828,6 +4995,13 @@ function cardTitle(p) {
     if (p.pack.offer.type === "Bank Staff") return "Bank staff offer";
     if (p.pack.offer.type === "Senior Support Worker") return "Senior support offer";
     return "Full-time offer";
+  }
+  if (vtContext === "health") return p.pack.health.cleared ? "Health cleared" : "Health open";
+  if (vtContext === "payroll") return p.pack.payroll.keyPhone ? "Handoff started" : "Starter pack";
+  if (vtContext === "score") {
+    const panel = evaluateScores(p.pack.scores.a, p.pack.scores.b);
+    if (!panel.answered) return "Scores open";
+    return panel.can_proceed_to_offer ? "Panel agreed" : "Consensus due";
   }
   if (vtFolder === "gaps" || vtFolder === "history") {
     const gap = openGap(p);
@@ -3855,9 +5029,21 @@ function cardPreview(p) {
     return `${days} of 3 induction days attended. ${assets} of 3 assets signed out.`;
   }
   if (vtContext === "offer") {
-    const pay = payLine(p.pack.offer.type);
+    const pay = payPackage(p);
     const state = p.pack.offer.signed ? "Signed" : p.pack.offer.sent ? "Queued for e-sign" : "Not sent";
-    return `${pay.figure} ${pay.unit}, plus a £${Number(p.pack.offer.sleep || 0).toFixed(2)} sleep-in. ${state}.`;
+    return `${pay.figure} ${pay.unit}, £${pay.rate.toFixed(2)} sleep-in in ${pay.region}. Gross £${pay.gross.toLocaleString("en-GB")}. ${state}.`;
+  }
+  if (vtContext === "health") {
+    return p.pack.health.cleared ? "Fit for 24-hour shifts, manual handling, and personal care." : "Fitness, Equality Act adjustments, and the occupational health referral are still open.";
+  }
+  if (vtContext === "payroll") {
+    return p.pack.payroll.p45 ? "P45 is in. Bank details stay in this session and are left out of the Ofsted file." : "P45, emergency contact, job description, Working Time Directive, and key agreement are open.";
+  }
+  if (vtContext === "score") {
+    const panel = evaluateScores(p.pack.scores.a, p.pack.scores.b);
+    if (!panel.answered) return "Both interviewers still need a score on all 28 scenarios.";
+    const safe = panel.discrepancies_found.filter((item) => item.is_safeguarding).length;
+    return `Average ${panel.average_score}. ${safe} safeguarding gap${safe === 1 ? "" : "s"} over 2 points.`;
   }
   if (vtFolder === "history" || vtFolder === "gaps") {
     const gap = openGap(p);
@@ -3877,15 +5063,19 @@ function accentFor(p) {
   if (vtContext === "signoff") return p.pack.signoff.signed ? "#3ec4c4" : "#5c63c7";
   if (vtContext === "induction") return p.pack.induction.days.every((day) => day.attended) ? "#3ec4c4" : "#e25b8a";
   if (vtContext === "offer") return p.pack.offer.sent ? "#3ec4c4" : "#5c63c7";
+  if (vtContext === "health") return p.pack.health.cleared ? "#3ec4c4" : "#e25b8a";
+  if (vtContext === "payroll") return p.pack.payroll.keyPhone && p.pack.payroll.p45 ? "#3ec4c4" : "#5c63c7";
+  if (vtContext === "score") return evaluateScores(p.pack.scores.a, p.pack.scores.b).can_proceed_to_offer ? "#3ec4c4" : "#e25b8a";
   if (openGap(p) || p.pack.docs.some((d) => d.status === "missing")) return "#e25b8a";
   if (p.pack.docs.some((d) => d.status !== "verified") || p.pack.refs.some((r) => r.datesOnly || !r.verbal.legit)) return "#5c63c7";
   return "#3ec4c4";
 }
 
 function vtPeople() {
-  if (vtFolder === "settings" || vtContext === "audit") return [];
+  if (vtFolder === "settings" || vtFolder === "watch" || vtFolder === "trail" || vtFolder === "purge") return [];
   let list = roster.filter((p) => p.pack);
-  if ((vtContext === "vetting" || vtContext === "signoff" || vtContext === "induction") && vtFilter !== "all") list = list.filter((p) => p.home === vtFilter);
+  if ((vtContext === "vetting" || vtContext === "signoff" || vtContext === "induction" || vtContext === "health" || vtContext === "payroll" || vtContext === "score") && vtFilter !== "all") list = list.filter((p) => p.home === vtFilter);
+  if (vtContext === "score" && vtFolder === "flags") list = list.filter((p) => evaluateScores(p.pack.scores.a, p.pack.scores.b).requires_consensus_discussion);
   if (vtContext === "offer" && vtFilter !== "all") list = list.filter((p) => p.pack.offer.type === vtFilter);
   const q = vtQuery.trim().toLowerCase();
   if (q) list = list.filter((p) => `${p.name} ${p.home} ${cardTitle(p)} ${cardPreview(p)} ${p.pack.offer.type}`.toLowerCase().includes(q));
@@ -3930,6 +5120,11 @@ function subjectFor(p) {
     if (vtFolder === "courses") return "Induction courses";
     return "Training calendar";
   }
+  if (vtContext === "health") return "Occupational health";
+  if (vtContext === "payroll") return "Payroll and assets";
+  if (vtContext === "score") return "Panel scores";
+  if (vtContext === "audit" && vtFolder === "bundle") return "Ofsted inspection pack";
+  if (vtContext === "audit" && vtFolder === "purge") return "180-day purge";
   if (vtFolder === "history" || vtFolder === "gaps") return "Employment history";
   if (vtFolder === "referees") return "Referee check";
   if (vtFolder === "archive") return "Archived pack";
@@ -3946,7 +5141,7 @@ function renderNav() {
     const count = badgeFor(id);
     const tone = index === 0 ? "red" : "orange";
     const badge = count && (index === 0 || index === 2) ? `<span class="vt-badge ${tone}">${count}</span>` : "";
-    return `<button type="button" data-folder="${id}" class="${vtFolder === id ? "on" : ""}">${VT_ICON[icon]}<span>${label}</span>${badge}</button>`;
+    return `<button type="button" data-folder="${id}" title="${esc(label)}" class="${vtFolder === id ? "on" : ""}">${VT_ICON[icon]}<span>${label}</span>${badge}</button>`;
   }).join("");
   const dots = vtContext === "offer"
     ? [["Full-time", "Full-time", "#3b82f6"], ["Bank Staff", "Bank", "#f5a623"], ["Senior Support Worker", "Senior", "#22d3ee"], ["all", "All roles", "#f04352"]]
@@ -3989,16 +5184,20 @@ function paintAuditCards() {
   }
   if (trail) {
     if (!rows.some((item) => item.id === vtAuditId)) vtAuditId = rows[0].id;
-    box.innerHTML = rows.map((item) => `<button type="button" class="vt-card ${item.id === vtAuditId ? "on" : ""}" data-audit="${item.id}" style="--bar:#5c63c7"><span class="ava" style="--bg:#d9e4f5"></span><span><span class="vt-card-top"><b>${esc(item.kind)}</b><time>${esc(stampOf(item.at))}</time></span><span class="vt-from">${esc(item.actor)}</span><span class="vt-snip">${esc(item.text)}</span></span><i class="vt-accent"></i></button>`).join("");
+    box.innerHTML = rows.map((item) => `<div class="cart-row ${item.id === vtAuditId ? "on" : ""}"><button type="button" class="cart-hit" data-audit="${item.id}"><span class="cart-ava cart-ava-plain"></span><span class="cart-copy"><b>${esc(item.kind)}</b><small>${esc(item.actor)}</small></span><span class="cart-attr">${esc(stampOf(item.at))}</span><span class="cart-step"><i>−</i><b>1</b><i>+</i></span><span class="cart-price">Trail</span></button></div>`).join("");
     return;
   }
   if (!rows.some((item) => item.id === vtWatchId)) vtWatchId = rows[0].id;
-  box.innerHTML = rows.map((item) => `<button type="button" class="vt-card ${item.id === vtWatchId ? "on" : ""}" data-watch="${item.id}" style="--bar:#e25b8a"><span class="ava" style="--bg:#f6c9d4"></span><span><span class="vt-card-top"><b>${esc(item.reason)}</b><time>${esc(stampOf(item.at))}</time></span><span class="vt-from">${esc(item.name)}</span><span class="vt-snip">${esc(item.notes)}</span></span><i class="vt-accent"></i></button>`).join("");
+  box.innerHTML = rows.map((item) => `<div class="cart-row ${item.id === vtWatchId ? "on" : ""}"><button type="button" class="cart-hit" data-watch="${item.id}"><span class="cart-ava cart-ava-plain"></span><span class="cart-copy"><b>${esc(item.name)}</b><small>${esc(item.reason)}</small></span><span class="cart-attr">${esc(stampOf(item.at))}</span><span class="cart-step"><i>−</i><b>1</b><i>+</i></span><span class="cart-price">Watch</span></button></div>`).join("");
 }
 
 function paintCards() {
   const box = document.getElementById("vtCards");
-  if (vtContext === "audit" && vtFolder !== "settings") { paintAuditCards(); return; }
+  if (vtContext === "audit" && (vtFolder === "watch" || vtFolder === "trail")) { paintAuditCards(); return; }
+  if (vtFolder === "purge") {
+    box.innerHTML = `<button type="button" class="vt-card on" data-pick="desk" style="--bar:#e25b8a"><span class="ava"></span><span><span class="vt-card-top"><b>180-day purge</b><time>GDPR</time></span><span class="vt-from">Rejected files</span><span class="vt-snip">Watchlist names stay. Other rejected files leave after 180 days.</span></span><i class="vt-accent"></i></button>`;
+    return;
+  }
   if (vtFolder === "settings") {
     box.innerHTML = `<button type="button" class="vt-card on" data-pick="desk" style="--bar:#5c63c7"><span class="ava" style="--bg:#f6d3b0"></span><span><span class="vt-card-top"><b>Desk settings</b><time>Now</time></span><span class="vt-from">${esc(deskName())}</span><span class="vt-snip">Vetting locker and the conditional offer share this desk. The toggle above swaps the context.</span></span><i class="vt-accent"></i></button>`;
     return;
@@ -4008,18 +5207,20 @@ function paintCards() {
     box.innerHTML = `<p class="vt-empty">Nothing in this folder.</p>`;
     return;
   }
-  const stamps = ["12 min ago", "12 min ago", "11:42 AM", "1:10 AM", "11:42 AM"];
+  const focus = activePerson();
   box.innerHTML = rows.map((p) => {
-    const stamp = stamps[roster.indexOf(p)] || "Today";
-    return `<button type="button" class="vt-card ${p.id === activePerson().id ? "on" : ""}" data-pick="${p.id}" style="--bar:${accentFor(p)}">
-      <span class="ava" style="--bg:${p.tone}">${avatarSvg(p)}</span>
-      <span>
-        <span class="vt-card-top"><b>${esc(cardTitle(p))}</b><time>${stamp}</time></span>
-        <span class="vt-from">${esc(p.name)}</span>
-        <span class="vt-snip">${esc(cardPreview(p))}</span>
-      </span>
-      <i class="vt-accent"></i>
-    </button>`;
+    const open = (p.missing && p.missing.length) || 0;
+    const home = String(p.home || "").replace(" Lodge", "").replace(" House", "");
+    return `<div class="cart-row ${p.id === focus.id ? "on" : ""}${p.held ? " held" : ""}">
+      <button type="button" class="cart-hit" data-pick="${p.id}">
+        <span class="cart-ava">${avatarSvg(p)}</span>
+        <span class="cart-copy"><b>${esc(p.name)}</b><small>${esc(STAGE_META[p.stage].short)}</small></span>
+        <span class="cart-attr">${esc(home)}</span>
+        <span class="cart-step"><i>−</i><b>${open}</b><i>+</i></span>
+        <span class="cart-price">${p.held ? "Held" : (p.percent || 0) + "%"}</span>
+      </button>
+      <button type="button" class="cart-x" data-drop="${p.id}" aria-label="Hold ${esc(p.name)}">×</button>
+    </div>`;
   }).join("");
 }
 
@@ -4034,10 +5235,9 @@ function threadHtml(p) {
 }
 
 function docCards(p) {
-  return `<div class="vt-files">${p.pack.docs.map((d, i) => {
-    const tone = i % 2 ? "orange" : "cyan";
+  return `<div class="file-row">${p.pack.docs.map((d) => {
     const meta = d.status === "missing" ? "Not uploaded" : `${d.status === "verified" ? "Verified" : "Pending"} · ${d.size}`;
-    return `<button type="button" class="vt-file ${d.id === vtDocId ? "on" : ""}" data-doc="${d.id}"><span class="vt-fico ${tone}">${fileGlyph()}</span><span class="vt-file-copy"><b>${esc(d.file || d.title)}</b><small>${esc(meta)}</small></span></button>`;
+    return fileTile({ name: d.file || d.title, size: meta, kind: "doc", attrs: `data-peek="doc" data-doc="${d.id}" data-person="${p.id}"` });
   }).join("")}</div>`;
 }
 
@@ -4055,10 +5255,9 @@ function historyBody(p) {
 
 function refereeBody(p) {
   const ref = activeRef(p);
-  const rows = p.pack.refs.map((r, i) => {
-    const tone = i % 2 ? "orange" : "cyan";
+  const rows = p.pack.refs.map((r) => {
     const meta = r.datesOnly ? "Dates only" : r.verbal.legit ? "Verbally verified" : "Verbal log open";
-    return `<button type="button" class="vt-file ${r.id === ref.id ? "on" : ""}" data-refpick="${r.id}"><span class="vt-fico ${tone}">${fileGlyph()}</span><span class="vt-file-copy"><b>${esc(r.role)}</b><small>${esc(r.name)} · ${meta}</small></span></button>`;
+    return fileTile({ name: r.name, size: `${r.role} · ${meta}`, kind: "mail", attrs: `data-peek="ref" data-ref="${r.id}" data-person="${p.id}"` });
   }).join("");
   const prompt = ref.datesOnly ? `<button type="button" class="vt-prompt" id="vtPrompt">Additional Info Regulatory Prompt</button>
     <label class="vt-field">What the referee added<textarea class="vt-note" id="vtExtra" placeholder="Dates plus conduct, duties, and reason for leaving">${esc(ref.extra)}</textarea></label>
@@ -4072,12 +5271,13 @@ function refereeBody(p) {
       <button type="button" class="vt-toggle ${ref.verbal.legit ? "on" : ""}" id="vtLegit" aria-pressed="${ref.verbal.legit}"><i></i><span>${ref.verbal.legit ? "Legitimate" : "Not confirmed"}</span></button>
     </section>
   </div>
-  <div class="vt-files">${rows}</div>`;
+  <div class="file-row">${rows}</div>`;
 }
 
 function offerBody(p) {
   const offer = p.pack.offer;
   const pay = payLine(offer.type);
+  const pkg = payPackage(p);
   const g = gateState(p);
   const reasons = blockReason(p);
   const hot = vtFolder === "salary" || vtFolder === "offers" ? "salary" : vtFolder;
@@ -4090,9 +5290,11 @@ function offerBody(p) {
       <h3>Salary and allowances</h3>
       <label class="vt-field">Employment type<select id="vtType">${types}</select></label>
       <p class="vt-pay"><b>${pay.figure}</b><span>${pay.unit}</span></p>
+      <p class="vt-pay"><b>£${pkg.rate.toFixed(2)}</b><span>sleep-in · ${esc(pkg.region)}</span></p>
       <label class="vt-field">Overnight sleep-in rate<input id="vtSleep" inputmode="decimal" value="${esc(offer.sleep)}"></label>
+      <label class="vt-field">Sleep-ins each week<input id="vtNights" inputmode="numeric" value="${esc(offer.nightsPerWeek || 2)}"></label>
       <label class="vt-field">Company email<input id="vtEmail" type="email" value="${esc(offer.email)}"></label>
-      <p class="vt-hint">Full-time and Senior Support Worker sit at £27,300 a year. Bank Staff sits at £14.00 an hour. The sleep-in is paid on top.</p>
+      <p class="vt-hint">${pkg.nights} nights × £${pkg.rate.toFixed(2)} = £${pkg.allowance.toLocaleString("en-GB")}. Statutory rate for ${esc(p.home)} is £${pkg.statutory.toFixed(2)}. Total gross package £${pkg.gross.toLocaleString("en-GB")}. Bank staff hourly rate is £14.00, which is the same £27,300 base.</p>
     </div>
     <div class="vt-block ${hot === "terms" ? "hot" : ""}">
       <h3>Conditional terms</h3>
@@ -4198,8 +5400,109 @@ function settingsBody() {
     <button type="button" class="vt-save" id="vtHome2">Return to the queue</button>`;
 }
 
+function healthBody(p) {
+  const h = p.pack.health;
+  const yn = (key, label) => `<div class="vt-field">${label}<span class="vt-pad-row">
+      <button type="button" class="vt-save" data-fit="${key}" data-val="yes">Yes</button>
+      <button type="button" class="vt-save" data-fit="${key}" data-val="no">No</button>
+    </span><p class="vt-hint">${h[key] === true ? "Yes" : h[key] === false ? "No" : "Not asked"}</p></div>`;
+  return `<div class="vt-block ${vtFolder === "fitness" ? "hot" : ""}"><h3>Fitness for the home</h3>
+      ${yn("fitShifts", "Fit for 24-hour shifts")}
+      ${yn("manualHandling", "Fit for manual handling")}
+      ${yn("personalCare", "Can carry out personal care")}
+    </div>
+    <div class="vt-block ${vtFolder === "adjust" ? "hot" : ""}"><h3>Equality Act 2010</h3>
+      <button type="button" class="vt-term ${h.adjustments ? "on" : ""}" data-fit="adjustments"><i></i><span>Reasonable adjustments required</span></button>
+      <label class="vt-field">Adjustment note<textarea class="vt-note" id="vtAdjust" placeholder="What the home will change">${esc(h.adjustmentNote)}</textarea></label>
+    </div>
+    <div class="vt-block ${vtFolder === "referral" ? "hot" : ""}"><h3>Occupational health</h3>
+      <label class="vt-field">Referral<select id="vtReferral">
+        <option ${h.referral === "not-required" ? "selected" : ""}>not-required</option>
+        <option ${h.referral === "referred" ? "selected" : ""}>referred</option>
+        <option ${h.referral === "cleared" ? "selected" : ""}>cleared</option>
+      </select></label>
+      <button type="button" class="vt-send" id="vtHealthClear">${h.cleared ? "Cleared" : "Mark cleared"}</button>
+    </div>`;
+}
+
+function payrollBody(p) {
+  const pay = p.pack.payroll;
+  const tick = (key, label) => `<button type="button" class="vt-term ${pay[key] ? "on" : ""}" data-pay="${key}"><i></i><span>${label}</span></button>`;
+  return `<div class="vt-block ${vtFolder === "bank" ? "hot" : ""}"><h3>New starter</h3>
+      <label class="vt-field">Bank<input id="vtBank" autocomplete="off" value="${esc(pay.bankName)}"></label>
+      <label class="vt-field">Sort code<input id="vtSort" inputmode="numeric" autocomplete="off" maxlength="8" value="${esc(pay.sortCode)}"></label>
+      <label class="vt-field">Account number<input id="vtAccount" type="password" autocomplete="off" maxlength="12" value="${esc(pay.account)}"></label>
+      <p class="vt-hint">The account number stays in this browser session. The Ofsted bundle records only whether bank details were submitted.</p>
+      ${tick("p45", "P45 or new starter declaration received")}
+      ${tick("starter", "New starter checklist complete")}
+      <label class="vt-field">Emergency contact<input id="vtEmerg" value="${esc(pay.emergencyName)}"></label>
+      <label class="vt-field">Emergency phone<input id="vtEmergPhone" value="${esc(pay.emergencyPhone)}"></label>
+    </div>
+    <div class="vt-block ${vtFolder === "agreements" ? "hot" : ""}"><h3>Signed agreements</h3>
+      ${tick("jobDescription", "Job description signed")}
+      ${tick("wtdOptOut", "Working Time Directive opt-out signed")}
+      ${tick("keyPhone", "Key and phone agreement signed")}
+    </div>`;
+}
+
+function scoreBody(p) {
+  const panel = evaluateScores(p.pack.scores.a, p.pack.scores.b);
+  const rows = PANEL_QUESTIONS.map((title, index) => {
+    const q = index + 1;
+    const flagged = panel.discrepancies_found.some((item) => item.question_id === q);
+    return `<label class="sc-row${flagged ? " flag" : ""}"><span>${q}. ${esc(title)}${SAFEGUARDING_IDS.includes(q) ? " · safeguarding" : ""}</span>
+      <input data-score="a" data-q="${q}" inputmode="numeric" maxlength="1" value="${esc(p.pack.scores.a[q])}" aria-label="Kenny score ${q}">
+      <input data-score="b" data-q="${q}" inputmode="numeric" maxlength="1" value="${esc(p.pack.scores.b[q])}" aria-label="Second interviewer score ${q}">
+    </label>`;
+  }).join("");
+  const hold = !panel.answered
+    ? `<div class="vt-warn"><b>Scores are still open.</b> Both interviewers need a mark on every scenario.</div>`
+    : panel.requires_consensus_discussion
+      ? `<div class="vt-warn"><b>Consensus discussion required.</b> A safeguarding question differs by more than 2 points, or the panel totals differ by more than 10.</div>`
+      : `<div class="vt-ok">The panel can proceed. Average ${panel.average_score}.</div>`;
+  return `${hold}
+    <p class="vt-copy">${esc(p.pack.scores.interviewer1)} and ${esc(p.pack.scores.interviewer2)}. Scores are 0 to 5.</p>
+    <div class="sc-head"><span>Scenario</span><span>K</span><span>2</span></div>
+    ${rows}
+    <label class="vt-field">Teams recording name<input id="vtRecording" value="${esc(p.pack.scores.recording)}" placeholder="Teams recording file"></label>`;
+}
+
+function bundleRead() {
+  const p = focusPerson();
+  refreshPercent(p);
+  const mark = `OFSTED VERIFIED - SEQUEL SUPPORT - CANDIDATE ${p.id}`;
+  return `<div class="vt-scroll"><h2 class="vt-subject">Inspection pack</h2>
+    <p class="vt-copy">${esc(mark)}</p>
+    <p class="vt-copy">${esc(p.name)} at ${esc(p.home)} is ${p.percent}% complete. ${esc(dbsRecheckLine(p))}</p>
+    <button type="button" class="vt-send" id="vtBundle">Compile watermarked pack</button>
+    <p class="vt-hint">The download carries a SHA-256 checksum. Bank account numbers are not included.</p></div>`;
+}
+
+function purgePreview() {
+  const now = Date.now();
+  const samples = [
+    { id: "cand_old", name: "Alex Ward", status: "REJECTED", watch: false, at: "2025-12-01T00:00:00Z" },
+    { id: "cand_new", name: "Riley Chen", status: "REJECTED", watch: false, at: "2026-09-01T00:00:00Z" },
+    { id: "w-jordan", name: "Jordan Hale", status: "REJECTED", watch: true, at: "2025-06-01T00:00:00Z" }
+  ];
+  return samples.map((row) => {
+    const days = Math.floor((now - new Date(row.at).getTime()) / 86400000);
+    const purge = row.status === "REJECTED" && !row.watch && days >= 180;
+    return `<li><i></i><span><b>${esc(row.name)}</b><span>${purge ? "Due for purge" : row.watch ? "Watchlist, kept" : "Inside 180 days"} · ${days} days</span></span></li>`;
+  }).join("");
+}
+
+function purgeRead() {
+  return `<div class="vt-scroll"><h2 class="vt-subject">180-day purge</h2>
+    <p class="vt-copy">Rejected candidates leave Google Drive after 180 days. Anyone on the reapply watchlist is exempt.</p>
+    <ol class="vt-time">${purgePreview()}</ol>
+    <p class="vt-hint">This desk only previews the worker. Drive folders are trashed by the Apps Script purge action.</p></div>`;
+}
+
 function renderRead() {
-  if (vtContext === "audit" && vtFolder !== "settings") return auditRead();
+  if (vtContext === "audit" && (vtFolder === "watch" || vtFolder === "trail")) return auditRead();
+  if (vtContext === "audit" && vtFolder === "bundle") return bundleRead();
+  if (vtContext === "audit" && vtFolder === "purge") return purgeRead();
   const loadLabel = { offer: "Load 3 previous offers", signoff: "Load 3 previous packs", induction: "Load 3 previous courses", audit: "Load 3 previous events" }[vtContext] || "Load 3 previous checks";
   const tools = `
     <button type="button" data-tool="prev" aria-label="Previous">${VT_ICON.reply}</button>
@@ -4222,16 +5525,24 @@ function renderRead() {
   if (vtContext === "offer") body = offerBody(p);
   else if (vtContext === "signoff") body = signoffBody(p);
   else if (vtContext === "induction") body = inductionBody(p);
+  else if (vtContext === "health") body = healthBody(p);
+  else if (vtContext === "payroll") body = payrollBody(p);
+  else if (vtContext === "score") body = scoreBody(p);
   else if (vtFolder === "history" || vtFolder === "gaps") body = historyBody(p);
   else if (vtFolder === "referees") body = refereeBody(p);
   else {
     const doc = activeDoc(p);
-    body = `<p class="vt-copy">${esc(doc.note)}</p>${docCards(p)}`;
+    const extra = doc.id === "dbs" ? ` ${dbsRecheckLine(p)}` : "";
+    const recheck = doc.id === "dbs" ? `<button type="button" class="vt-save" id="vtDbsRecheck">Mark DBS rechecked today</button>` : "";
+    body = `<p class="vt-copy">${esc(doc.note + extra)}</p>${docCards(p)}${recheck}`;
   }
   const greet = {
     offer: `The conditional offer for ${p.home} is ready to configure. It does not go out until DBS, references, identity, and every employment gap are clear.`,
     signoff: `Emily Carter can review this pack on site and authorise hiring for ${p.home}.`,
-    induction: `Book the 3-day induction, Team Teach, and PACE before unsupervised shifts at ${p.home}.`
+    induction: `Book the 3-day induction, Team Teach, and PACE before unsupervised shifts at ${p.home}.`,
+    health: `Record fitness for 24-hour shifts, manual handling, personal care, and any Equality Act adjustment.`,
+    payroll: `Capture the starter declaration, emergency contact, and the signed key and phone agreement.`,
+    score: `Kenny and the second interviewer score all 28 scenarios. A safeguarding gap over 2 points holds the offer.`
   }[vtContext] || `The safeguarding pack for ${p.home} is open on this desk. Check the locker, the timeline, and the referees before a contract is raised.`;
   return `<button type="button" class="vt-load" id="vtLoad">${loadLabel}</button>
     <div class="vt-tools">${tools}<span class="vt-count"><button type="button" id="vtPrev" aria-label="Previous file">${VT_ICON.reply}</button>${index + 1} of ${rows.length}<button type="button" id="vtNext" aria-label="Next file">${VT_ICON.reply}</button></span></div>
@@ -4253,11 +5564,113 @@ function renderRead() {
     </div>`;
 }
 
+function switchHtml() {
+  const items = [["vetting", "Vetting"], ["offer", "Offer"], ["signoff", "Sign-off"], ["induction", "Induction"], ["audit", "Audit"], ["health", "Health"], ["payroll", "Payroll"], ["score", "Scores"]];
+  return `<div class="vt-switch" role="group" aria-label="Desk sections">${items.map(([id, label]) => `<button type="button" data-ctx="${id}" class="${vtContext === id ? "on" : ""}">${label}</button>`).join("")}</div>`;
+}
+function chipHtml() {
+  return `<div class="ux-chips">${vtPeople().map((row) => `<button type="button" class="ux-chip ${row.id === activePerson().id ? "on" : ""}" data-pick="${row.id}">${esc(row.name.split(" ")[0])}</button>`).join("")}</div>`;
+}
+function renderOfferCalc() {
+  const p = activePerson();
+  const offer = p.pack.offer;
+  const view = calcView(p);
+  const g = gateState(p);
+  const reasons = blockReason(p);
+  const types = ["Full-time", "Bank Staff", "Senior Support Worker"].map((type) => `<option ${offer.type === type ? "selected" : ""}>${type}</option>`).join("");
+  const pad = offer.sent ? `<div class="ux-pad"><p>Sign on the glass. The letter is queued to ${esc(offer.email)}.</p><canvas class="vt-pad" id="vtSign" width="640" height="140"></canvas><div class="vt-pad-row"><button type="button" class="vt-save" id="vtSignClear">Clear</button><button type="button" class="vt-send" id="vtSignOk">${offer.signed ? "Signed" : "Confirm signature"}</button></div></div>` : "";
+  document.getElementById("uxCalc").innerHTML = `<div class="ux-calc-left">
+      <button type="button" class="ux-back" style="margin-bottom:10px">← Back to the queue</button>
+      ${switchHtml()}
+      <p class="ux-calc-kicker">Pay calculator</p>
+      ${chipHtml()}
+      <label class="ux-stack"><span>Home</span><b>${esc(p.home)}</b></label>
+      <label class="ux-stack"><span>Contract</span><select id="vtType">${types}</select></label>
+      <label class="ux-stack"><span>Sleep-in rate (£)</span><input id="vtSleep" inputmode="decimal" value="${esc(offer.sleep)}"></label>
+      <label class="ux-stack"><span>Nights each week</span><input id="vtNights" inputmode="numeric" value="${esc(offer.nightsPerWeek || 2)}"></label>
+      <label class="ux-stack"><span>Company email</span><input id="vtEmail" type="email" value="${esc(offer.email)}"></label>
+      <ul class="ux-terms">
+        <li class="${g.dbs ? "on" : ""}">Clear DBS Update Service before the start date</li>
+        <li class="${g.refs ? "on" : ""}">Current, secondary, and character references</li>
+        <li class="${g.id ? "on" : ""}">Passport and proof of address</li>
+        <li class="${openGap(p) ? "" : "on"}">Every employment gap explained</li>
+      </ul>
+      ${pad}
+    </div>
+    <div class="ux-calc-right">
+      <div class="ux-stats">
+        <div class="ux-legend">
+          <p><i class="ux-dot" style="background:#b6f5d4"></i><span><em>Base salary</em><b id="uxBaseAmt">£${view.base.toLocaleString("en-GB")}</b><small id="uxBasePct">(${view.baseShare}%)</small></span></p>
+          <p><i class="ux-dot" style="background:#0dd573"></i><span><em>Sleep-in allowance</em><b id="uxSleepAmt">£${Math.round(view.pkg.allowance).toLocaleString("en-GB")}</b><small id="uxSleepPct">(${view.sleepShare}%)</small></span></p>
+        </div>
+        <div class="ux-donut" id="uxDonut" style="background:conic-gradient(#b6f5d4 0 ${view.baseShare}%, #0dd573 ${view.baseShare}% 100%)"><i></i></div>
+      </div>
+      <div class="ux-payband">
+        <small>Your package</small>
+        <strong id="uxGross">£${Math.round(view.pkg.gross).toLocaleString("en-GB")}</strong>
+        <em id="uxNightsLine">${view.pkg.nights} nights · £${view.pkg.rate.toFixed(2)} · ${esc(view.pkg.region)}</em>
+        <button type="button" id="vtSend">${offer.sent ? "Send the offer again" : "Send the offer"}</button>
+        ${reasons.length ? `<p class="ux-warn">${esc(reasons[0])}</p>` : ""}
+      </div>
+    </div>`;
+}
+function renderJourney() {
+  const p = activePerson();
+  refreshPercent(p);
+  const pct = p.percent || 0;
+  const docs = p.pack.docs.filter((doc) => doc.status === "verified").length;
+  const refs = p.pack.refs.filter((ref) => !ref.datesOnly && ref.verbal && ref.verbal.legit).length;
+  const dbs = p.pack.docs.find((doc) => doc.id === "dbs");
+  const open = (p.missing && p.missing.length) || 0;
+  const gaps = openGap(p) ? 1 : 0;
+  const word = vtContext === "induction" ? "House induction" : "Clearing this pack";
+  const goFolder = vtContext === "induction" ? "calendar" : "signature";
+  const goLabel = vtContext === "induction" ? "Open the calendar" : "Get started";
+  document.getElementById("uxJourney").innerHTML = `<header class="ux-nav">
+      <div class="ux-brand"><span class="ux-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="none" stroke="#067a3a" stroke-width="1.8"/><path d="M11 16.5l3 3 7-7" fill="none" stroke="#00b85c" stroke-width="1.8"/></svg></span><b>Sequel Support</b></div>
+      <button type="button" class="ux-back">Queue</button>
+      ${switchHtml()}
+    </header>
+    <div class="ux-board">
+      <div>
+        <h1 class="ux-hero">${word}<br>has never been so <em>simple</em></h1>
+        ${chipHtml()}
+        <label class="ux-stack"><span>File completion</span><input class="ux-range" type="range" min="0" max="100" value="${pct}" disabled style="--p:${pct}%"></label>
+        <label class="ux-stack"><span>Open papers</span><b>${open}</b></label>
+        <label class="ux-stack"><span>Employment gaps</span><b>${gaps}</b></label>
+        <label class="ux-stack"><span>Home</span><b>${esc(p.home)}</b></label>
+      </div>
+      <article class="ux-card">
+        <p class="kicker">${vtContext === "induction" ? "Induction progress" : "File completion"}</p>
+        <p class="figure">${pct}%</p>
+        <div class="ux-line"><span>Documents verified</span><b>${docs}/${p.pack.docs.length}</b></div>
+        <div class="ux-line"><span>References logged</span><b>${refs}/${p.pack.refs.length}</b></div>
+        <div class="ux-line"><span>DBS Update Service</span><b>${esc(dbs ? dbs.status : "missing")}</b></div>
+        <div class="ux-line"><span>Occupational health</span><b>${p.pack.health.cleared ? "Cleared" : "Open"}</b></div>
+        <div class="ux-line"><span>Manager sign-off</span><b>${p.pack.signoff.signed ? "Signed" : "Waiting"}</b></div>
+        <button type="button" class="ux-go" data-folder="${goFolder}">${goLabel}</button>
+        <div class="ux-detail" id="journeyBody">${renderRead()}</div>
+      </article>
+      <aside class="ux-next-col">
+        <h2>What to do next?</h2>
+        <button type="button" class="ux-next" data-ctx="health"><span><b>Occupational health</b><small>Fitness, shifts, and Equality Act adjustments</small></span><span class="ux-next-ava">${avatarSvg(p)}</span><span class="ux-arrow">→</span></button>
+        <button type="button" class="ux-next" data-ctx="offer"><span><b>Offer and sleep-in</b><small>Base pay, nights, and the contract</small></span><span class="ux-next-ava">${avatarSvg(p)}</span><span class="ux-arrow">→</span></button>
+        <button type="button" class="ux-next" data-ctx="score"><span><b>Interview scores</b><small>28 scenarios, two interviewers</small></span><span class="ux-next-ava">${avatarSvg(p)}</span><span class="ux-arrow">→</span></button>
+      </aside>
+    </div>`;
+}
 function renderVetting() {
   ensurePacks();
   const rows = vtPeople();
   if (rows.length && !rows.some((p) => p.id === focusId)) focusId = rows[0].id;
-  document.getElementById("vtCompose").textContent = { offer: "New offer", signoff: "Sign pack", induction: "Book course", audit: "Export" }[vtContext] || "Log gap";
+  const layout = vtContext === "offer" ? "calc" : (vtContext === "signoff" || vtContext === "induction" ? "journey" : "cart");
+  const root = document.getElementById("vetting");
+  root.dataset.layout = layout;
+  document.body.dataset.ux = layout;
+  document.getElementById("uxCart").hidden = layout !== "cart";
+  document.getElementById("uxCalc").hidden = layout !== "calc";
+  document.getElementById("uxJourney").hidden = layout !== "journey";
+  document.getElementById("vtCompose").textContent = { offer: "New offer", signoff: "Sign pack", induction: "Book course", audit: "Export", health: "Clear health", payroll: "Save handoff", score: "Check panel" }[vtContext] || "Log gap";
   const deskPerson = roster.find((item) => item.id === focusId) || roster[0];
   const blurb = document.getElementById("csBlurb");
   if (blurb && deskPerson) {
@@ -4271,15 +5684,37 @@ function renderVetting() {
       offer: "Set the contract, the pay, and the sleep-in rate.",
       signoff: "Emily Carter signs the pack before hiring.",
       induction: "House induction, Team Teach, and PACE.",
-      audit: "Unsuitable list and the Ofsted trail."
+      audit: "Unsuitable list and the Ofsted trail.",
+      health: "Fitness, adjustments, and occupational health.",
+      payroll: "Starter pack, keys, and the phone agreement.",
+      score: "28 scenarios, two interviewers."
     }[vtContext];
   }
+  const person = activePerson();
+  if (person && person.pack) refreshPercent(person);
+  const sub = document.getElementById("uxSub");
+  if (sub && person) sub.textContent = (person.percent || 0) + "%";
+  const cartTitle = document.getElementById("uxCartTitle");
+  if (cartTitle) cartTitle.textContent = { health: "Health file", payroll: "Payroll handoff", score: "Interview scores", audit: "Ofsted file" }[vtContext] || "Safeguarding file";
+  const side = document.getElementById("uxSideTitle");
+  if (side) side.textContent = { health: "Fitness record", payroll: "Starter pack", score: "Panel scores", audit: "Audit trail" }[vtContext] || "File details";
+  const folderName = (foldersFor(vtContext).find((row) => row[0] === vtFolder) || [])[1] || "";
+  const folderEl = document.getElementById("uxFolder");
+  if (folderEl) folderEl.textContent = folderName;
+  const pick = document.getElementById("uxPickLabel");
+  if (pick) pick.textContent = vtContext === "audit" ? "Select record" : "Select home";
+  if (layout !== "calc") document.getElementById("uxCalc").innerHTML = "";
+  if (layout !== "journey") document.getElementById("uxJourney").innerHTML = "";
+  if (layout !== "cart") document.getElementById("vtRead").innerHTML = "";
+  renderNav();
+  if (layout === "cart") {
+    paintCards();
+    document.getElementById("vtRead").innerHTML = renderRead();
+  } else if (layout === "calc") renderOfferCalc();
+  else renderJourney();
   document.querySelectorAll(".vt-switch button").forEach((btn) => {
     btn.classList.toggle("on", btn.dataset.ctx === vtContext);
   });
-  renderNav();
-  paintCards();
-  document.getElementById("vtRead").innerHTML = renderRead();
   bindSign();
 }
 
@@ -4313,7 +5748,7 @@ function bindSign() {
 }
 
 function firstFolder(ctx) {
-  return { offer: "offers", signoff: "packet", induction: "calendar", audit: "watch" }[ctx] || "documents";
+  return { offer: "offers", signoff: "packet", induction: "calendar", audit: "watch", health: "fitness", payroll: "bank", score: "panel" }[ctx] || "documents";
 }
 
 function setVtContext(ctx) {
@@ -4425,6 +5860,7 @@ function saveExtra() {
 function offerLetter(p) {
   const offer = p.pack.offer;
   const pay = payLine(offer.type);
+  const pkg = payPackage(p);
   const g = gateState(p);
   return [
     "Sequel Support Ltd",
@@ -4434,7 +5870,10 @@ function offerLetter(p) {
     `Role: Children's Support Worker`,
     `Employment: ${offer.type}`,
     `Base pay: ${pay.figure} ${pay.unit}`,
-    `Overnight sleep-in: £${Number(offer.sleep).toFixed(2)}`,
+    `Overnight sleep-in: £${pkg.rate.toFixed(2)} (${pkg.region})`,
+    `Projected sleep-ins: ${pkg.nights}`,
+    `Annual sleep-in allowance: £${pkg.allowance.toFixed(2)}`,
+    `Total gross package: £${pkg.gross.toFixed(2)}`,
     `Company email: ${offer.email}`,
     "This offer is conditional on:",
     `- DBS Update Service clear: ${g.dbs ? "yes" : "no"}`,
@@ -4584,6 +6023,13 @@ function confirmManager() {
   p.steps = [true, true, true, true, true];
   audit("signature", `Emily Carter signed the hiring pack for ${p.name}`, p.id);
   toast(`${p.name} authorised by Emily Carter`);
+  pushNote({
+    tag: "sign-" + p.id,
+    kind: "sign",
+    title: "Manager signed",
+    body: `Emily Carter signed the pack for ${p.name}.`,
+    focus: p.id
+  });
   renderVetting();
 }
 
@@ -4602,6 +6048,27 @@ function exportAudit() {
 
 function onCompose() {
   ensurePacks();
+  if (vtContext === "health") {
+    const p = activePerson();
+    p.pack.health.cleared = true;
+    p.pack.health.referral = "cleared";
+    audit("health", `Occupational health cleared for ${p.name}`, p.id);
+    toast(`${p.name} cleared by occupational health`);
+    renderVetting();
+    return;
+  }
+  if (vtContext === "payroll") {
+    toast("Starter pack saved for this session");
+    return;
+  }
+  if (vtContext === "score") {
+    const p = activePerson();
+    const panel = evaluateScores(p.pack.scores.a, p.pack.scores.b);
+    vtFolder = panel.requires_consensus_discussion ? "flags" : "panel";
+    toast(panel.can_proceed_to_offer ? `Panel agreed · average ${panel.average_score}` : "Consensus discussion required");
+    renderVetting();
+    return;
+  }
   if (vtContext === "signoff") { vtFolder = "signature"; renderVetting(); return; }
   if (vtContext === "induction") { vtFolder = "calendar"; renderVetting(); return; }
   if (vtContext === "audit") { exportAudit(); return; }
@@ -4623,6 +6090,7 @@ function onCompose() {
 
 function openVetting() {
   closeDocs();
+  hideBoards();
   ensurePacks();
   hideMenu();
   document.querySelector(".stage").hidden = true;
@@ -4639,20 +6107,78 @@ function openVetting() {
 function closeVetting() {
   document.getElementById("vetting").hidden = true;
   document.body.classList.remove("in-vetting");
+  document.body.removeAttribute("data-ux");
   document.body.classList.add("in-app");
   document.getElementById("workspace").hidden = false;
   renderWorkspace();
 }
 
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest("button");
+  if (!btn) return;
+  if (btn.dataset.savefile) { savePeekFile(btn.dataset); return; }
+  if (btn.id === "peekClose" || btn.id === "peekScrim") { closePeek(); return; }
+  if (btn.id === "peekFull") {
+    document.getElementById("peek").classList.toggle("full");
+    return;
+  }
+  if (btn.id === "peekDown") {
+    if (peekState) savePeekFile({ person: peekState.personId, doc: peekState.docId, mail: peekState.mailId, ref: peekState.refId, title: peekState.subject, sub: peekState.body });
+    return;
+  }
+  if (btn.dataset.peek && !btn.closest("#dkNoteList")) openPeek(btn.dataset, btn.dataset.peekFull === "1");
+});
+
 document.getElementById("vetting").addEventListener("click", (event) => {
   const btn = event.target.closest("button");
   if (!btn) return;
-  if (btn.id === "vtHome" || btn.id === "vtHome2" || btn.id === "vtFoot") { closeVetting(); return; }
+  if (btn.dataset.peek || btn.dataset.savefile) return;
+  if (btn.dataset.drop) {
+    const person = roster.find((item) => item.id === btn.dataset.drop);
+    if (person) {
+      person.held = true;
+      toast(`${person.name} held on the desk`);
+      renderVetting();
+    }
+    return;
+  }
+  if (btn.id === "vtHome" || btn.id === "vtHome2" || btn.id === "vtFoot" || btn.classList.contains("ux-back")) { closeVetting(); return; }
   if (btn.dataset.ctx) { setVtContext(btn.dataset.ctx); return; }
   if (btn.dataset.folder) { vtFolder = btn.dataset.folder; vtThread = 0; renderVetting(); return; }
   if (btn.dataset.filter) { vtFilter = btn.dataset.filter; renderVetting(); return; }
   if (btn.dataset.watch) { vtWatchId = btn.dataset.watch; renderVetting(); return; }
   if (btn.dataset.audit) { vtAuditId = btn.dataset.audit; renderVetting(); return; }
+  if (btn.dataset.fit) {
+    const person = activePerson();
+    if (btn.dataset.val) person.pack.health[btn.dataset.fit] = btn.dataset.val === "yes";
+    else person.pack.health[btn.dataset.fit] = !person.pack.health[btn.dataset.fit];
+    renderVetting();
+    return;
+  }
+  if (btn.dataset.pay) {
+    const person = activePerson();
+    person.pack.payroll[btn.dataset.pay] = !person.pack.payroll[btn.dataset.pay];
+    renderVetting();
+    return;
+  }
+  if (btn.id === "vtHealthClear") {
+    const person = activePerson();
+    person.pack.health.cleared = true;
+    person.pack.health.referral = "cleared";
+    audit("health", `Occupational health cleared for ${person.name}`, person.id);
+    toast(`${person.name} cleared by occupational health`);
+    renderVetting();
+    return;
+  }
+  if (btn.id === "vtBundle") { exportOfsted(); return; }
+  if (btn.id === "vtDbsRecheck") {
+    const person = activePerson();
+    person.pack.dbsChecked = new Date().toISOString().slice(0, 10);
+    audit("dbs", `DBS Update Service rechecked for ${person.name}`, person.id);
+    toast("DBS recheck recorded");
+    renderVetting();
+    return;
+  }
   if (btn.dataset.check) { toggleCheck(btn.dataset.check); return; }
   if (btn.dataset.attend) { toggleAttend(btn.dataset.attend); return; }
   if (btn.dataset.asset) { toggleAsset(btn.dataset.asset); return; }
@@ -4707,6 +6233,11 @@ document.getElementById("vetting").addEventListener("change", (event) => {
     p.pack.offer.type = event.target.value;
     renderVetting();
   }
+  if (event.target.id === "vtReferral") {
+    p.pack.health.referral = event.target.value;
+    if (event.target.value === "cleared") p.pack.health.cleared = true;
+    renderVetting();
+  }
   if (event.target.id === "vtCall") {
     const ref = activeRef(p);
     ref.verbal.date = event.target.value;
@@ -4723,7 +6254,20 @@ document.getElementById("vetting").addEventListener("input", (event) => {
   const p = roster.find((item) => item.id === focusId);
   if (!p || !p.pack) return;
   if (event.target.id === "vtSleep") p.pack.offer.sleep = event.target.value;
+  if (event.target.id === "vtNights") p.pack.offer.nightsPerWeek = Number(event.target.value) || 0;
+  if (event.target.id === "vtSleep" || event.target.id === "vtNights") paintCalcFigures();
   if (event.target.id === "vtEmail") p.pack.offer.email = event.target.value;
+  if (event.target.id === "vtAdjust") p.pack.health.adjustmentNote = event.target.value;
+  if (event.target.id === "vtBank") p.pack.payroll.bankName = event.target.value;
+  if (event.target.id === "vtSort") p.pack.payroll.sortCode = event.target.value;
+  if (event.target.id === "vtAccount") p.pack.payroll.account = event.target.value;
+  if (event.target.id === "vtEmerg") p.pack.payroll.emergencyName = event.target.value;
+  if (event.target.id === "vtEmergPhone") p.pack.payroll.emergencyPhone = event.target.value;
+  if (event.target.id === "vtRecording") p.pack.scores.recording = event.target.value;
+  if (event.target.dataset.score) {
+    const raw = event.target.value.trim();
+    p.pack.scores[event.target.dataset.score][event.target.dataset.q] = raw === "" ? "" : Math.max(0, Math.min(5, Number(raw) || 0));
+  }
   if (event.target.id === "vtNotes") activeRef(p).verbal.notes = event.target.value;
   if (event.target.id === "vtGapNote") {
     const gap = p.pack.history.find((h) => h.id === event.target.dataset.gap);
@@ -4772,6 +6316,10 @@ document.getElementById("menuHome").addEventListener("click", (event) => {
   if (btn.dataset.go === "screen") { openPrescreen(); return; }
   if (btn.dataset.go === "interviews") { openInterview(); return; }
   if (btn.dataset.go === "vetting") { vtContext = "vetting"; vtFolder = "documents"; openVetting(); return; }
+  if (btn.dataset.go === "health") { vtContext = "health"; vtFolder = "fitness"; openVetting(); return; }
+  if (btn.dataset.go === "payroll") { vtContext = "payroll"; vtFolder = "bank"; openVetting(); return; }
+  if (btn.dataset.go === "score") { vtContext = "score"; vtFolder = "panel"; openVetting(); return; }
+  if (btn.dataset.go === "executive") { openExec(); return; }
   if (btn.dataset.person) {
     focusId = btn.dataset.person;
     openStage(focusPerson().stage);
@@ -4790,6 +6338,81 @@ document.getElementById("mhSearch").addEventListener("submit", (event) => {
   if (!rows.length) toast("No file matches that search");
 });
 document.getElementById("mhQuery").addEventListener("input", paintMenuHits);
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").then((reg) => { swReg = reg; }).catch(() => {});
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "open-note") openFromNote(event.data.data);
+  });
+}
+document.getElementById("exHome").onclick = () => openMenu();
+document.getElementById("tkHome").onclick = () => openMenu();
+const GATE_SLIDES = [
+  { n: "01", line: "And so the\nsafeguarding\nbegins....." },
+  { n: "02", line: "And so the\nhiring\nbegins....." },
+  { n: "03", line: "And so the\nvetting\nbegins....." },
+  { n: "04", line: "And so the\ndesk\nbegins....." }
+];
+let gateIndex = 1;
+function paintGate() {
+  const slide = GATE_SLIDES[gateIndex];
+  document.getElementById("gateNum").textContent = slide.n;
+  document.getElementById("gateTitle").innerHTML = slide.line.split("\n").map(esc).join("<br>");
+  document.querySelectorAll("#gate [data-gate]").forEach((btn) => {
+    btn.classList.toggle("on", Number(btn.dataset.gate) === gateIndex);
+  });
+}
+function openLogin() {
+  document.getElementById("gate").hidden = true;
+  document.getElementById("gateMenu").hidden = true;
+  document.querySelector(".stage").hidden = false;
+}
+document.getElementById("gate").addEventListener("click", (event) => {
+  const btn = event.target.closest("button");
+  if (!btn) return;
+  if (btn.id === "gateEnter" || btn.id === "gateEnterMenu") { openLogin(); return; }
+  if (btn.id === "gateHam") {
+    const menu = document.getElementById("gateMenu");
+    const open = menu.hidden;
+    menu.hidden = !open;
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    return;
+  }
+  if (btn.id === "gateNext") {
+    gateIndex = (gateIndex + 1) % GATE_SLIDES.length;
+    paintGate();
+    return;
+  }
+  if (btn.dataset.gate != null) {
+    gateIndex = Number(btn.dataset.gate);
+    document.getElementById("gateMenu").hidden = true;
+    paintGate();
+  }
+});
+paintGate();
+const trackParam = new URLSearchParams(location.search).get("track");
+if (trackParam && roster.some((p) => p.id === trackParam)) {
+  document.getElementById("gate").hidden = true;
+  focusId = trackParam;
+  openTracker(true);
+}
 </script>
+  <div id="peek" class="peek" hidden>
+    <button type="button" class="peek-scrim" id="peekScrim" aria-label="Close the viewer"></button>
+    <aside class="peek-card" role="dialog" aria-modal="true" aria-labelledby="peekName">
+      <div class="peek-tools">
+        <button type="button" id="peekFull">Full screen</button>
+        <button type="button" id="peekDown">Download</button>
+        <button type="button" id="peekClose" aria-label="Close">Close</button>
+      </div>
+      <article class="peek-mail">
+        <header>
+          <span class="peek-ava" id="peekAva"></span>
+          <div><b id="peekName"></b><time id="peekWhen"></time></div>
+        </header>
+        <h2 id="peekSubject"></h2>
+        <p id="peekBody"></p>
+      </article>
+    </aside>
+  </div>
 </body>
 </html>
