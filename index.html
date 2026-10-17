@@ -2401,7 +2401,13 @@
   body.in-track {
     background: #123 url("photos/desk.jpg") center / cover no-repeat fixed;
   }
-  .mh { background: transparent; }
+  .mh, .mh-hero, .dk, .docs, .ps, .ex, .tk { background: transparent; color: #163028; }
+  .dk-tri { display: none; }
+  .mh-logo, .mh-nav button, .mh-copy h1, .mh-copy p { color: #163028; }
+  .mh-logo i { border-color: #163028; }
+  .mh-card, .mh-search, .docs-card, .ex-card, .tk-card {
+    box-shadow: 0 16px 40px rgba(16, 36, 28, .12);
+  }
   #vetting.ux,
   #vetting.ux[data-layout="calc"],
   #vetting.ux[data-layout="journey"],
