@@ -3381,6 +3381,12 @@ document.getElementById("loginForm").addEventListener("submit", (event) => {
   officer = user.value.trim();
   if (document.getElementById("keep").checked) localStorage.setItem("sequel-hr-user", officer);
   else localStorage.removeItem("sequel-hr-user");
+  const api = deskApi();
+  if (api) {
+    api.issueToken({ username: officer, password: pass.value, role: "HR_ADMIN" }).then((data) => {
+      api.setToken(data.access_token);
+    }).catch((err) => toast(err.message || "Desk sign-in was not saved"));
+  }
   openMenu();
 });
 
@@ -5983,7 +5989,23 @@ function sendPrompt() {
   const p = activePerson();
   const ref = activeRef(p);
   if (!ref.datesOnly) { toast("This reference is not dates-only"); return; }
-  toast(`Additional information queued to ${ref.name} for ${p.name}`);
+  const api = deskApi();
+  if (!api || !api.token) {
+    toast(`Additional information queued to ${ref.name} for ${p.name}`);
+    return;
+  }
+  const sent = new Date(Date.now() - 5 * 86400000).toISOString();
+  api.chaseReference({
+    candidate_id: p.id,
+    full_name: p.name,
+    home_name: p.home,
+    referee_name: ref.name,
+    referee_email: "",
+    sent_at: sent,
+    dates_only: true
+  }).then((data) => {
+    toast(data.chased ? `Additional information chase sent to ${ref.name}` : `Chase logged for ${ref.name}`);
+  }).catch((err) => toast(err.message || "The reference chase was not logged"));
 }
 
 function saveExtra() {
@@ -6063,7 +6085,21 @@ function confirmSign() {
   p.confirmed = true;
   p.steps = [true, true, true, true, true];
   audit("signature", `${p.name} signed the conditional contract`, p.id);
-  toast(`${p.name} signed the conditional contract`);
+  const api = deskApi();
+  if (api && api.token) {
+    api.executeSignature({
+      candidate_id: p.id,
+      full_name: p.name,
+      home_name: p.home,
+      signer_email: p.email || companyMail(p.name),
+      email_token: api.token,
+      document_text: offerLetter(p)
+    }).then((data) => {
+      toast(`${p.name} signed. Certificate ${data.audit.id}`);
+    }).catch((err) => toast(err.message || "The signature certificate was not stored"));
+  } else {
+    toast(`${p.name} signed the conditional contract`);
+  }
   renderVetting();
 }
 

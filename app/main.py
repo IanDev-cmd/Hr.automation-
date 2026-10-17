@@ -5,6 +5,8 @@ import sys
 import time
 from pathlib import Path
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,7 +18,10 @@ if str(ROOT / "backend") not in sys.path:
     sys.path.insert(0, str(ROOT / "backend"))
 
 from app.config import get_settings
+from app.db import init_db
 from app.routers.hr import router as hr_router
+from app.routers.platform import router as platform_router
+from app.workers.reference_chaser import start_scheduler, stop_scheduler
 
 settings = get_settings()
 logger = logging.getLogger("hr.http")
@@ -32,7 +37,16 @@ def configure_logging(level: str) -> None:
 
 configure_logging(settings.log_level)
 
-app = FastAPI(title=settings.project_name, version=settings.version)
+
+@asynccontextmanager
+async def lifespan(_app):
+    init_db()
+    start_scheduler()
+    yield
+    stop_scheduler()
+
+
+app = FastAPI(title=settings.project_name, version=settings.version, lifespan=lifespan)
 origins = settings.origin_list()
 app.add_middleware(
     CORSMiddleware,
@@ -96,6 +110,7 @@ def health() -> dict:
 
 
 app.include_router(hr_router)
+app.include_router(platform_router)
 
 if (ROOT / "static").is_dir():
     app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")

@@ -4,6 +4,22 @@ export class HRAutomataAPI {
   constructor(baseUrl = "") {
     this.baseUrl = String(baseUrl || "").replace(/\/$/, "");
     this.timeoutMs = 12000;
+    this.token = "";
+    try {
+      this.token = sessionStorage.getItem("hr-token") || "";
+    } catch (_err) {
+      this.token = "";
+    }
+  }
+
+  setToken(token) {
+    this.token = token || "";
+    try {
+      if (this.token) sessionStorage.setItem("hr-token", this.token);
+      else sessionStorage.removeItem("hr-token");
+    } catch (_err) {
+      /* the desk still works for this tab */
+    }
   }
 
   async request(path, options = {}) {
@@ -12,7 +28,11 @@ export class HRAutomataAPI {
     try {
       const response = await fetch(this.baseUrl + path, {
         method: options.method || "GET",
-        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+        headers: {
+          "Content-Type": "application/json",
+          ...(this.token ? { Authorization: "Bearer " + this.token } : {}),
+          ...(options.headers || {})
+        },
         body: options.body == null ? undefined : JSON.stringify(options.body),
         signal: controller.signal
       });
@@ -65,5 +85,21 @@ export class HRAutomataAPI {
 
   previewPurge(records) {
     return this.request("/api/v1/hr/gdpr/purge", { method: "POST", body: { records } });
+  }
+
+  issueToken(body) {
+    return this.request("/api/v1/auth/token", { method: "POST", body });
+  }
+
+  executeSignature(body) {
+    return this.request("/api/v1/hr/signatures/execute", { method: "POST", body });
+  }
+
+  chaseReference(body) {
+    return this.request("/api/v1/hr/references/chase", { method: "POST", body });
+  }
+
+  historicCandidates() {
+    return this.request("/api/v1/hr/candidates/historic");
   }
 }

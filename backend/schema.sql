@@ -23,7 +23,11 @@ CREATE TABLE candidates (
   applied_at TIMESTAMPTZ NOT NULL,
   rejected_at TIMESTAMPTZ,
   on_reapply_watchlist BOOLEAN NOT NULL DEFAULT FALSE,
-  completion_percent INTEGER NOT NULL DEFAULT 0
+  completion_percent INTEGER NOT NULL DEFAULT 0,
+  rejection_reason TEXT,
+  reapply_eligible_at TIMESTAMPTZ,
+  skills_tags TEXT NOT NULL DEFAULT '',
+  source TEXT NOT NULL DEFAULT ''
 );
 
 CREATE TABLE documents (
@@ -96,6 +100,74 @@ CREATE TABLE audit_events (
   actor TEXT NOT NULL,
   kind TEXT NOT NULL,
   text TEXT NOT NULL
+);
+
+CREATE TABLE screening_answers (
+  candidate_id TEXT PRIMARY KEY REFERENCES candidates (id),
+  nvq_level_3 BOOLEAN NOT NULL,
+  driving_licence_one_year BOOLEAN NOT NULL,
+  right_to_work BOOLEAN NOT NULL,
+  years_experience NUMERIC(4, 1) NOT NULL
+);
+
+CREATE TABLE signature_audits (
+  id TEXT PRIMARY KEY,
+  candidate_id TEXT NOT NULL REFERENCES candidates (id),
+  signer_email TEXT NOT NULL,
+  ip_address TEXT NOT NULL,
+  user_agent TEXT NOT NULL,
+  signed_at TIMESTAMPTZ NOT NULL,
+  document_sha256 TEXT NOT NULL,
+  token_sha256 TEXT NOT NULL
+);
+
+CREATE TABLE reference_requests (
+  id TEXT PRIMARY KEY,
+  candidate_id TEXT NOT NULL REFERENCES candidates (id),
+  referee_name TEXT NOT NULL,
+  referee_email TEXT NOT NULL DEFAULT '',
+  sent_at TIMESTAMPTZ NOT NULL,
+  dates_only BOOLEAN NOT NULL DEFAULT FALSE,
+  received BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE reference_chases (
+  id TEXT PRIMARY KEY,
+  reference_id TEXT NOT NULL REFERENCES reference_requests (id),
+  chased_at TIMESTAMPTZ NOT NULL,
+  template_name TEXT NOT NULL,
+  note TEXT NOT NULL
+);
+
+CREATE TABLE home_visits (
+  id TEXT PRIMARY KEY,
+  candidate_id TEXT NOT NULL REFERENCES candidates (id),
+  home_id TEXT NOT NULL REFERENCES homes (id),
+  visit_at TIMESTAMPTZ NOT NULL,
+  visitor_name TEXT NOT NULL
+);
+
+CREATE TABLE training_bookings (
+  id TEXT PRIMARY KEY,
+  candidate_id TEXT NOT NULL REFERENCES candidates (id),
+  course TEXT NOT NULL,
+  booked_for TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE dbs_checks (
+  id TEXT PRIMARY KEY,
+  candidate_id TEXT NOT NULL REFERENCES candidates (id),
+  certificate_number TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL,
+  checked_at TIMESTAMPTZ NOT NULL,
+  next_due TIMESTAMPTZ
+);
+
+CREATE TABLE reengagement_alerts (
+  id TEXT PRIMARY KEY,
+  candidate_id TEXT NOT NULL REFERENCES candidates (id),
+  note TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE ofsted_bundles (

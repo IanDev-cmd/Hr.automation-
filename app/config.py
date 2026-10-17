@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     apps_script_webhook_url: str = Field(default="", alias="APPS_SCRIPT_WEBHOOK_URL")
     hr_webhook_token: str = Field(default="", alias="HR_WEBHOOK_TOKEN")
     database_url: str = Field(default="", alias="DATABASE_URL")
+    jwt_secret: str = Field(default="dev-sequel-hr-desk", alias="JWT_SECRET")
+    indeed_webhook_token: str = Field(default="", alias="INDEED_WEBHOOK_TOKEN")
+    ms_tenant_id: str = Field(default="", alias="MS_TENANT_ID")
+    ms_client_id: str = Field(default="", alias="MS_CLIENT_ID")
+    ms_client_secret: str = Field(default="", alias="MS_CLIENT_SECRET")
+    ms_organizer_user: str = Field(default="", alias="MS_ORGANIZER_USER")
     cors_origins: str = Field(
         default="http://127.0.0.1:8765,http://localhost:8765",
         alias="CORS_ORIGINS",
