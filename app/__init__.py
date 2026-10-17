@@ -1,0 +1,1 @@
+"""HR.aUtomata HTTP application."""

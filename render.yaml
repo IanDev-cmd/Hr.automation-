@@ -1,6 +1,5 @@
 # Sequel Support HR desk.
-# Single-page static site. Render serves index.html; there is no server,
-# database, or secret. Login stays in the browser.
+# Python web service. The FastAPI app serves the page and the HR engines.
 
 previews:
   generation: automatic
@@ -8,27 +7,34 @@ previews:
 services:
   - type: web
     name: hr-automation
-    runtime: static
+    runtime: python
     repo: https://github.com/IanDev-cmd/Hr.automation-
     branch: main
     region: frankfurt
     autoDeployTrigger: commit
-    buildCommand: "echo Sequel Support HR desk"
-    staticPublishPath: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHON_VERSION
+        value: "3.12.7"
     buildFilter:
       paths:
+        - app/**
+        - backend/hr_automata/**
+        - static/**
         - index.html
-        - render.yaml
         - sw.js
         - photos/desk.jpg
+        - requirements.txt
+        - render.yaml
       ignoredPaths:
         - _serve.js
-    previews:
-      generation: automatic
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+        - backend/tests/**
+        - tests/**
     headers:
       - path: /index.html
         name: Cache-Control

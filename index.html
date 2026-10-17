@@ -3986,7 +3986,7 @@ function bundleText(p) {
     `Panel average: ${panel.average_score}`,
     `Consensus required: ${panel.requires_consensus_discussion ? "yes" : "no"}`,
     `Health cleared: ${p.pack.health.cleared ? "yes" : "no"}`,
-    `Bank details submitted: ${p.pack.payroll.account ? "yes" : "no"}`,
+    `Bank details submitted: ${p.pack.payroll.accountLast4 ? "yes, ending " + p.pack.payroll.accountLast4 : "no"}`,
     `Key and phone signed: ${p.pack.payroll.keyPhone ? "yes" : "no"}`,
     `Working Time Directive opt-out: ${p.pack.payroll.wtdOptOut ? "yes" : "no"}`,
     "Missing:",
@@ -4047,11 +4047,8 @@ function renderExec() {
     people.forEach(refreshPercent);
     const avg = people.length ? Math.round(people.reduce((sum, p) => sum + p.percent, 0) / people.length) : 0;
     const gaps = people.filter((p) => p.pack && openGap(p)).length;
-    const dbsDue = people.filter((p) => {
-      if (!p.pack || !p.pack.dbsChecked) return false;
-      const days = Math.floor((Date.now() - new Date(`${p.pack.dbsChecked}T00:00:00`).getTime()) / 86400000);
-      return days >= 90;
-    }).length;
+    people.forEach((p) => { if (p.pack) dbsRecheckLine(p); });
+    const dbsDue = people.filter((p) => p.pack && p.pack.dbsDue).length;
     const peopleWord = `${people.length} candidate${people.length === 1 ? "" : "s"}`;
     const gapWord = `${gaps} open gap${gaps === 1 ? "" : "s"}`;
     const dbsWord = `${dbsDue} DBS recheck${dbsDue === 1 ? "" : "s"} due`;
@@ -4074,7 +4071,7 @@ function openExec() {
   document.getElementById("exec").hidden = false;
   document.body.classList.remove("in-app", "in-screen", "in-vetting", "in-menu", "in-track");
   document.body.classList.add("in-exec");
-  renderExec();
+  ensureHomeRates().then(() => renderExec());
 }
 
 function renderTracker() {
@@ -4513,38 +4510,96 @@ const PANEL_QUESTIONS = [
   "Ofsted arrives and asks for this child's file."
 ];
 
+const HOME_RATES = {};
+function deskApi() {
+  return window.hrApi || null;
+}
 function homeSleep(home) {
-  return home === "Fernleigh House" ? 60 : 63;
+  return HOME_RATES[home] ? HOME_RATES[home].sleep_in_rate_per_night : 0;
 }
 function regionName(home) {
-  return home === "Fernleigh House" ? "Cornwall" : "Bournemouth";
+  return HOME_RATES[home] ? HOME_RATES[home].region : "";
 }
-function payLine(type) {
-  if (type === "Bank Staff") return { figure: "£14.00", unit: "an hour" };
-  return { figure: "£27,300", unit: "a year" };
+function ensureHomeRates() {
+  const api = deskApi();
+  if (!api) return Promise.resolve();
+  if (ensureHomeRates.ready) return Promise.resolve();
+  if (ensureHomeRates.flight) return ensureHomeRates.flight;
+  ensureHomeRates.flight = Promise.all(HOMES.map((home) => api.calculatePay({
+    home_name: home,
+    expected_sleep_ins_per_week: 2,
+    employment_type: "Full-time"
+  }).then((data) => { HOME_RATES[home] = data; }))).then(() => {
+    ensureHomeRates.ready = true;
+  }).catch((err) => {
+    ensureHomeRates.flight = null;
+    toast(err.message || "Pay desk unavailable");
+  });
+  return ensureHomeRates.flight;
+}
+function payLine(type, pkg) {
+  if (pkg && pkg.figure) return { figure: pkg.figure, unit: pkg.unit };
+  if (type === "Bank Staff") return { figure: "…", unit: "an hour" };
+  return { figure: "…", unit: "a year" };
+}
+function emptyPay() {
+  return { figure: "…", unit: "a year", statutory: 0, rate: 0, nights: 0, allowance: 0, gross: 0, region: "", bank: false, base: 0, hourly: 0 };
+}
+function quoteFromEngine(data) {
+  const bank = data.employment_type === "Bank Staff";
+  return {
+    figure: bank ? "£" + Number(data.base_hourly_rate).toFixed(2) : "£" + Math.round(data.base_annual_salary).toLocaleString("en-GB"),
+    unit: bank ? "an hour" : "a year",
+    statutory: data.sleep_in_rate_per_night,
+    rate: data.sleep_in_rate_per_night,
+    nights: data.projected_sleep_ins_annual,
+    allowance: data.annual_sleep_in_allowance,
+    gross: data.total_gross_annual_package,
+    region: data.region,
+    bank,
+    base: data.base_annual_salary,
+    hourly: data.base_hourly_rate
+  };
+}
+function payKey(p) {
+  const offer = (p.pack && p.pack.offer) || {};
+  return [p.home, offer.type || "Full-time", Number(offer.nightsPerWeek || 2)].join("|");
+}
+function schedulePay(p) {
+  const api = deskApi();
+  const offer = p.pack && p.pack.offer;
+  if (!api || !offer) return;
+  const key = payKey(p);
+  if (offer.quoteKey === key || offer.pendingKey === key) return;
+  offer.pendingKey = key;
+  api.calculatePay({
+    home_name: p.home,
+    expected_sleep_ins_per_week: Number(offer.nightsPerWeek || 2),
+    employment_type: offer.type || "Full-time"
+  }).then((data) => {
+    if (payKey(p) !== key) return;
+    offer.quote = quoteFromEngine(data);
+    offer.quoteKey = key;
+    offer.pendingKey = "";
+    offer.sleep = Number(data.sleep_in_rate_per_night).toFixed(2);
+    HOME_RATES[p.home] = data;
+    if (document.body.classList.contains("in-vetting")) renderVetting();
+    else paintCalcFigures();
+  }).catch((err) => {
+    offer.pendingKey = "";
+    toast(err.message || "Pay desk unavailable");
+  });
 }
 function payPackage(p) {
   const offer = (p.pack && p.pack.offer) || {};
-  const type = offer.type || "Full-time";
-  const nightsPerWeek = Number(offer.nightsPerWeek || 2);
-  const statutory = homeSleep(p.home);
-  const typed = Number(offer.sleep);
-  const rate = Number.isFinite(typed) && typed > 0 ? typed : statutory;
-  const nights = nightsPerWeek * 52;
-  const allowance = nights * rate;
-  const bank = type === "Bank Staff";
-  return {
-    figure: bank ? "£14.00" : "£27,300",
-    unit: bank ? "an hour" : "a year",
-    statutory, rate, nights, allowance,
-    gross: 27300 + allowance,
-    region: regionName(p.home),
-    bank
-  };
+  const key = payKey(p);
+  if (offer.quote && offer.quoteKey === key) return offer.quote;
+  schedulePay(p);
+  return offer.quote || emptyPay();
 }
 function calcView(p) {
   const pkg = payPackage(p);
-  const base = 27300;
+  const base = pkg.base || 0;
   const baseShare = pkg.gross ? Math.round(1000 * base / pkg.gross) / 10 : 0;
   return { pkg, base, baseShare, sleepShare: Math.round((100 - baseShare) * 10) / 10 };
 }
@@ -4586,29 +4641,51 @@ function sheetAnswered(raw) {
   }
   return true;
 }
-function evaluateScores(aRaw, bRaw) {
-  const a = scoreMap(aRaw);
-  const b = scoreMap(bRaw);
-  const answered = sheetAnswered(aRaw) && sheetAnswered(bRaw);
-  const discrepancies = [];
-  let total1 = 0;
-  let total2 = 0;
-  for (let q = 1; q <= 28; q++) {
-    total1 += a[q];
-    total2 += b[q];
-    const diff = Math.abs(a[q] - b[q]);
-    if (diff > 2) discrepancies.push({ question_id: q, is_safeguarding: SAFEGUARDING_IDS.includes(q), difference: diff, score_interviewer_1: a[q], score_interviewer_2: b[q] });
-  }
-  const requires = answered && (discrepancies.some((item) => item.is_safeguarding) || Math.abs(total1 - total2) > 10);
+const scoreCache = new Map();
+function scoreKey(aRaw, bRaw) {
+  return JSON.stringify([scoreMap(aRaw), scoreMap(bRaw)]);
+}
+function blankVerdict(answered) {
   return {
-    interviewer_1_total: total1,
-    interviewer_2_total: total2,
-    average_score: Math.round(((total1 + total2) / 2) * 100) / 100,
-    discrepancies_found: answered ? discrepancies : [],
+    interviewer_1_total: 0,
+    interviewer_2_total: 0,
+    average_score: 0,
+    discrepancies_found: [],
     answered,
-    requires_consensus_discussion: requires,
-    can_proceed_to_offer: answered && !requires
+    requires_consensus_discussion: false,
+    can_proceed_to_offer: false
   };
+}
+function scheduleScores(aRaw, bRaw, key) {
+  const api = deskApi();
+  if (!api || scoreCache.has(key) || scheduleScores.pending === key) return;
+  scheduleScores.pending = key;
+  api.evaluateInterview({
+    interviewer_1_scores: scoreMap(aRaw),
+    interviewer_2_scores: scoreMap(bRaw)
+  }).then((data) => {
+    scoreCache.set(key, {
+      interviewer_1_total: data.interviewer_1_total,
+      interviewer_2_total: data.interviewer_2_total,
+      average_score: data.average_score,
+      discrepancies_found: data.discrepancies_found || [],
+      answered: true,
+      requires_consensus_discussion: data.requires_consensus_discussion,
+      can_proceed_to_offer: data.can_proceed_to_offer
+    });
+    scheduleScores.pending = "";
+    if (document.body.classList.contains("in-vetting")) renderVetting();
+  }).catch((err) => {
+    scheduleScores.pending = "";
+    toast(err.message || "Interview desk unavailable");
+  });
+}
+function evaluateScores(aRaw, bRaw) {
+  const answered = sheetAnswered(aRaw) && sheetAnswered(bRaw);
+  if (!answered) return blankVerdict(false);
+  const key = scoreKey(aRaw, bRaw);
+  if (!scoreCache.has(key)) scheduleScores(aRaw, bRaw, key);
+  return scoreCache.get(key) || blankVerdict(true);
 }
 function blankHealth() {
   return { fitShifts: null, manualHandling: null, personalCare: null, adjustments: false, adjustmentNote: "", referral: "not-required", cleared: false };
@@ -4616,12 +4693,30 @@ function blankHealth() {
 function blankPayroll() {
   return { bankName: "", sortCode: "", account: "", p45: false, starter: false, emergencyName: "", emergencyPhone: "", jobDescription: false, wtdOptOut: false, keyPhone: false };
 }
+function scheduleDbs(p) {
+  const api = deskApi();
+  if (!api || !p.pack || !p.pack.dbsChecked) return;
+  const key = p.pack.dbsChecked;
+  if (p.pack.dbsKey === key || p.pack.dbsPending === key) return;
+  p.pack.dbsPending = key;
+  api.dbsRecheck(key).then((data) => {
+    p.pack.dbsKey = key;
+    p.pack.dbsPending = "";
+    p.pack.dbsDue = !!data.due;
+    p.pack.dbsLine = data.message;
+    if (document.body.classList.contains("in-vetting") || document.body.classList.contains("in-exec")) {
+      if (document.body.classList.contains("in-exec")) renderExec();
+      else renderVetting();
+    }
+  }).catch((err) => {
+    p.pack.dbsPending = "";
+    toast(err.message || "DBS desk unavailable");
+  });
+}
 function dbsRecheckLine(p) {
   if (!p.pack || !p.pack.dbsChecked) return "Update Service has not been checked.";
-  const checked = new Date(p.pack.dbsChecked + "T00:00:00");
-  const days = Math.floor((Date.now() - checked.getTime()) / 86400000);
-  if (days >= 90) return `Last Update Service check ${p.pack.dbsChecked} is ${days} days ago. A 90-day recheck is due.`;
-  return `Last Update Service check ${p.pack.dbsChecked}. Next recheck in ${90 - days} days.`;
+  if (p.pack.dbsKey !== p.pack.dbsChecked) scheduleDbs(p);
+  return p.pack.dbsLine || "Checking the Update Service.";
 }
 function refreshPercent(p) {
   if (!p.pack) return p.percent || 0;
@@ -4860,7 +4955,7 @@ function ensurePacks() {
     if (!p.pack.payroll) p.pack.payroll = blankPayroll();
     if (!p.pack.scores) p.pack.scores = blankScores(p);
     if (!p.pack.dbsChecked) p.pack.dbsChecked = p.id === "leah" ? "2026-06-01" : "2026-10-01";
-    if (p.pack.offer && (p.pack.offer.sleep === "45.00" || p.pack.offer.sleep === "45")) p.pack.offer.sleep = homeSleep(p.home).toFixed(2);
+    if (p.pack.offer && (p.pack.offer.sleep === "45.00" || p.pack.offer.sleep === "45" || !p.pack.offer.sleep)) schedulePay(p);
     if (p.pack.offer && !p.pack.offer.nightsPerWeek) p.pack.offer.nightsPerWeek = 2;
   });
 }
@@ -4868,7 +4963,7 @@ function ensurePacks() {
 function syncMissing(p) {
   const labels = { passport: "Passport", licence: "Driving licence", address: "Proof of address", nvq: "Level 3 NVQ/QCF", dbs: "DBS Update Service" };
   const open = p.pack.docs.filter((d) => d.status !== "verified").map((d) => labels[d.id]);
-  if (p.pack.history.some((h) => h.gap && h.days > 0 && !h.explanation.trim())) open.push("Gap explanation");
+  if (openGap(p)) open.push("Gap explanation");
   p.pack.refs.forEach((r) => {
     if (r.datesOnly || !r.verbal.legit) open.push(`${r.role} reference`);
   });
@@ -4881,8 +4976,35 @@ function gateState(p) {
   return { dbs: !!docs.dbs, id: !!(docs.passport && docs.address), refs: refsOk };
 }
 
+function gapKey(p) {
+  return (p.pack.history || []).map((h) => [h.id, h.gap ? 1 : 0, h.days || 0, h.explanation || ""].join(":")).join("|");
+}
+function scheduleGaps(p) {
+  const api = deskApi();
+  if (!api || !p.pack) return;
+  const key = gapKey(p);
+  if (p.pack.gapKey === key || p.pack.gapPending === key) return;
+  p.pack.gapPending = key;
+  const history = p.pack.history.map((h) => ({ id: h.id, gap: !!h.gap, days: Number(h.days) || 0, explanation: h.explanation || "" }));
+  api.checkGaps(history).then((data) => {
+    const open = (data.gaps || [])[0];
+    p.pack.gapRow = open ? (p.pack.history.find((h) => h.id === open.id) || null) : null;
+    p.pack.gapKey = key;
+    p.pack.gapPending = "";
+    if (document.body.classList.contains("in-vetting") || document.body.classList.contains("in-exec")) {
+      if (document.body.classList.contains("in-exec")) renderExec();
+      else renderVetting();
+    }
+  }).catch((err) => {
+    p.pack.gapPending = "";
+    toast(err.message || "Gap desk unavailable");
+  });
+}
 function openGap(p) {
-  return p.pack.history.find((h) => h.gap && h.days > 0 && !String(h.explanation || "").trim());
+  if (!p.pack || !p.pack.history) return null;
+  const key = gapKey(p);
+  if (p.pack.gapKey !== key) scheduleGaps(p);
+  return p.pack.gapKey === key ? (p.pack.gapRow || null) : null;
 }
 
 function blockReason(p) {
@@ -5250,7 +5372,7 @@ function docCards(p) {
 function historyBody(p) {
   const gap = openGap(p);
   const items = p.pack.history.map((h) => {
-    const warn = h.gap && h.days > 0 && !h.explanation.trim();
+    const warn = !!(gap && h.id === gap.id);
     return `<li class="${h.gap ? "gap" : ""}"><i></i><span><b>${esc(h.gap ? `${h.days}-day gap · ${h.from} – ${h.to}` : `${h.title} · ${h.org}`)}</b><span>${esc(h.gap ? (warn ? "Ofsted explanation required" : h.explanation) : `${h.from} – ${h.to}`)}</span></span></li>`;
   }).join("");
   const form = gap ? `<div class="vt-warn"><b>${gap.days} days with no work or education.</b> Ofsted expects a written explanation for every gap longer than 0 days.</div>
@@ -5282,8 +5404,8 @@ function refereeBody(p) {
 
 function offerBody(p) {
   const offer = p.pack.offer;
-  const pay = payLine(offer.type);
   const pkg = payPackage(p);
+  const pay = payLine(offer.type, pkg);
   const g = gateState(p);
   const reasons = blockReason(p);
   const hot = vtFolder === "salary" || vtFolder === "offers" ? "salary" : vtFolder;
@@ -5300,7 +5422,7 @@ function offerBody(p) {
       <label class="vt-field">Overnight sleep-in rate<input id="vtSleep" inputmode="decimal" value="${esc(offer.sleep)}"></label>
       <label class="vt-field">Sleep-ins each week<input id="vtNights" inputmode="numeric" value="${esc(offer.nightsPerWeek || 2)}"></label>
       <label class="vt-field">Company email<input id="vtEmail" type="email" value="${esc(offer.email)}"></label>
-      <p class="vt-hint">${pkg.nights} nights × £${pkg.rate.toFixed(2)} = £${pkg.allowance.toLocaleString("en-GB")}. Statutory rate for ${esc(p.home)} is £${pkg.statutory.toFixed(2)}. Total gross package £${pkg.gross.toLocaleString("en-GB")}. Bank staff hourly rate is £14.00, which is the same £27,300 base.</p>
+      <p class="vt-hint">${pkg.nights} nights × £${pkg.rate.toFixed(2)} = £${Math.round(pkg.allowance).toLocaleString("en-GB")}. Statutory rate for ${esc(p.home)} is £${pkg.statutory.toFixed(2)} in ${esc(pkg.region)}. Total gross package £${Math.round(pkg.gross).toLocaleString("en-GB")}. Hourly rate £${Number(pkg.hourly || 0).toFixed(2)} shares the £${Math.round(pkg.base || 0).toLocaleString("en-GB")} base.</p>
     </div>
     <div class="vt-block ${hot === "terms" ? "hot" : ""}">
       <h3>Conditional terms</h3>
@@ -5437,8 +5559,8 @@ function payrollBody(p) {
   return `<div class="vt-block ${vtFolder === "bank" ? "hot" : ""}"><h3>New starter</h3>
       <label class="vt-field">Bank<input id="vtBank" autocomplete="off" value="${esc(pay.bankName)}"></label>
       <label class="vt-field">Sort code<input id="vtSort" inputmode="numeric" autocomplete="off" maxlength="8" value="${esc(pay.sortCode)}"></label>
-      <label class="vt-field">Account number<input id="vtAccount" type="password" autocomplete="off" maxlength="12" value="${esc(pay.account)}"></label>
-      <p class="vt-hint">The account number stays in this browser session. The Ofsted bundle records only whether bank details were submitted.</p>
+      <label class="vt-field">Account number<input id="vtAccount" type="password" autocomplete="off" maxlength="10" value="" placeholder="${pay.accountLast4 ? "••••" + esc(pay.accountLast4) : ""}"></label>
+      <p class="vt-hint">${pay.accountLast4 ? "Stored as ••••" + esc(pay.accountLast4) + ". The full account number is not kept." : "Enter the account once. The desk stores only the last four digits."}</p>
       ${tick("p45", "P45 or new starter declaration received")}
       ${tick("starter", "New starter checklist complete")}
       <label class="vt-field">Emergency contact<input id="vtEmerg" value="${esc(pay.emergencyName)}"></label>
@@ -5484,18 +5606,33 @@ function bundleRead() {
     <p class="vt-hint">The download carries a SHA-256 checksum. Bank account numbers are not included.</p></div>`;
 }
 
-function purgePreview() {
-  const now = Date.now();
+const purgeCache = { html: "", pending: false };
+function schedulePurge() {
+  const api = deskApi();
+  if (!api || purgeCache.pending || purgeCache.html) return;
+  purgeCache.pending = true;
   const samples = [
-    { id: "cand_old", name: "Alex Ward", status: "REJECTED", watch: false, at: "2025-12-01T00:00:00Z" },
-    { id: "cand_new", name: "Riley Chen", status: "REJECTED", watch: false, at: "2026-09-01T00:00:00Z" },
-    { id: "w-jordan", name: "Jordan Hale", status: "REJECTED", watch: true, at: "2025-06-01T00:00:00Z" }
+    { candidate_id: "cand_old", name: "Alex Ward", overall_status: "REJECTED", is_on_reapply_watchlist: false, rejected_at: "2025-12-01T00:00:00Z" },
+    { candidate_id: "cand_new", name: "Riley Chen", overall_status: "REJECTED", is_on_reapply_watchlist: false, rejected_at: "2026-09-01T00:00:00Z" },
+    { candidate_id: "w-jordan", name: "Jordan Hale", overall_status: "REJECTED", is_on_reapply_watchlist: true, rejected_at: "2025-06-01T00:00:00Z" }
   ];
-  return samples.map((row) => {
-    const days = Math.floor((now - new Date(row.at).getTime()) / 86400000);
-    const purge = row.status === "REJECTED" && !row.watch && days >= 180;
-    return `<li><i></i><span><b>${esc(row.name)}</b><span>${purge ? "Due for purge" : row.watch ? "Watchlist, kept" : "Inside 180 days"} · ${days} days</span></span></li>`;
-  }).join("");
+  api.previewPurge(samples).then((data) => {
+    const due = new Set(data.purge_ids || []);
+    purgeCache.html = samples.map((row) => {
+      const kept = row.is_on_reapply_watchlist;
+      const label = due.has(row.candidate_id) ? "Due for purge" : kept ? "Watchlist, kept" : "Inside the retention window";
+      return `<li><i></i><span><b>${esc(row.name)}</b><span>${label}</span></span></li>`;
+    }).join("");
+    purgeCache.pending = false;
+    if (document.body.classList.contains("in-vetting") && vtFolder === "purge") renderVetting();
+  }).catch((err) => {
+    purgeCache.pending = false;
+    toast(err.message || "Retention desk unavailable");
+  });
+}
+function purgePreview() {
+  if (!purgeCache.html) schedulePurge();
+  return purgeCache.html || `<li><i></i><span><b>Retention</b><span>Checking the 180-day rule</span></span></li>`;
 }
 
 function purgeRead() {
@@ -5865,8 +6002,8 @@ function saveExtra() {
 
 function offerLetter(p) {
   const offer = p.pack.offer;
-  const pay = payLine(offer.type);
   const pkg = payPackage(p);
+  const pay = payLine(offer.type, pkg);
   const g = gateState(p);
   return [
     "Sequel Support Ltd",
@@ -6266,7 +6403,7 @@ document.getElementById("vetting").addEventListener("input", (event) => {
   if (event.target.id === "vtAdjust") p.pack.health.adjustmentNote = event.target.value;
   if (event.target.id === "vtBank") p.pack.payroll.bankName = event.target.value;
   if (event.target.id === "vtSort") p.pack.payroll.sortCode = event.target.value;
-  if (event.target.id === "vtAccount") p.pack.payroll.account = event.target.value;
+  if (event.target.id === "vtSort" || event.target.id === "vtAccount") scheduleHandoff(p);
   if (event.target.id === "vtEmerg") p.pack.payroll.emergencyName = event.target.value;
   if (event.target.id === "vtEmergPhone") p.pack.payroll.emergencyPhone = event.target.value;
   if (event.target.id === "vtRecording") p.pack.scores.recording = event.target.value;
@@ -6350,6 +6487,39 @@ if ("serviceWorker" in navigator) {
     if (event.data && event.data.type === "open-note") openFromNote(event.data.data);
   });
 }
+function scheduleHandoff(p) {
+  const api = deskApi();
+  const pay = p.pack && p.pack.payroll;
+  const field = document.getElementById("vtAccount");
+  if (!api || !pay || !field) return;
+  const account = field.value.trim();
+  const sort = String(pay.sortCode || "").trim();
+  if (!account || !sort) return;
+  clearTimeout(scheduleHandoff.timer);
+  scheduleHandoff.timer = setTimeout(() => {
+    api.payrollHandoff({
+      candidate_id: p.id,
+      candidate_name: p.name,
+      home_name: p.home,
+      sort_code: sort,
+      account_number: account,
+      p45_received: !!pay.p45,
+      starter_declaration: !!pay.starter,
+      emergency_name: pay.emergencyName || "",
+      emergency_phone: pay.emergencyPhone || "",
+      job_description_signed: !!pay.jobDescription,
+      working_time_opt_out: !!pay.wtdOptOut,
+      key_phone_signed: !!pay.keyPhone
+    }).then((data) => {
+      pay.account = "";
+      pay.accountLast4 = data.account_last4;
+      pay.bankSubmitted = true;
+      field.value = "";
+      toast("Bank stored as ••••" + data.account_last4);
+      if (document.body.classList.contains("in-vetting")) renderVetting();
+    }).catch((err) => toast(err.message || "Payroll desk rejected those bank details"));
+  }, 500);
+}
 document.getElementById("exHome").onclick = () => openMenu();
 document.getElementById("tkHome").onclick = () => openMenu();
 const GATE_SLIDES = [
@@ -6401,6 +6571,11 @@ if (trackParam && roster.some((p) => p.id === trackParam)) {
   focusId = trackParam;
   openTracker(true);
 }
+</script>
+<script type="module">
+  import { HRAutomataAPI } from "./static/api.js";
+  window.HRAutomataAPI = HRAutomataAPI;
+  window.hrApi = new HRAutomataAPI("");
 </script>
   <div id="peek" class="peek" hidden>
     <button type="button" class="peek-scrim" id="peekScrim" aria-label="Close the viewer"></button>
