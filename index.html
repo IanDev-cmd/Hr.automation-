@@ -7389,9 +7389,9 @@ const GATE_SLIDES = [
   { title: "OFFER", text: "The conditional offer uses the annual base plus the home's sleep-in rate. Bank details are stored as the last four digits only." }
 ];
 const GATE_HOMES = [
-  { pos: "18% 42%", alt: "Mayfield Lodge", slide: 1 },
-  { pos: "72% 36%", alt: "Rainbow Lodge", slide: 2 },
-  { pos: "46% 70%", alt: "Fernleigh House", slide: 3 }
+  { pos: "18% 42%", alt: "Mayfield Lodge", slide: 0 },
+  { pos: "72% 36%", alt: "Rainbow Lodge", slide: 1 },
+  { pos: "46% 70%", alt: "Fernleigh House", slide: 2 }
 ];
 let gateIndex = 0;
 const landCard = document.getElementById("landCard");
@@ -7409,9 +7409,8 @@ function paintGate(next) {
   document.querySelectorAll("#gate .links button[data-slide]").forEach((btn) => {
     btn.classList.toggle("on", Number(btn.dataset.slide) === gateIndex);
   });
-  const pop = Math.max(0, gateIndex - 1);
-  landThumbs.querySelectorAll("button").forEach((btn, i) => btn.classList.toggle("on", gateIndex > 0 && i === pop));
-  landPager.querySelectorAll("button").forEach((btn, i) => btn.classList.toggle("on", i === (gateIndex === 0 ? 1 : pop)));
+  landThumbs.querySelectorAll("button").forEach((btn, i) => btn.classList.toggle("on", i === gateIndex));
+  landPager.querySelectorAll("button").forEach((btn, i) => btn.classList.toggle("on", i === gateIndex));
 }
 function openLogin() {
   document.getElementById("gate").hidden = true;
@@ -7427,7 +7426,7 @@ document.getElementById("gate").addEventListener("click", (event) => {
   const thumb = event.target.closest("#landThumbs button");
   if (thumb) { paintGate(Number(thumb.dataset.slide)); return; }
   const dot = event.target.closest("#landPager button");
-  if (dot) { paintGate(Number(dot.dataset.pop) + 1); return; }
+  if (dot) { paintGate(Number(dot.dataset.pop)); return; }
   const nav = event.target.closest("#gate .links button[data-slide]");
   if (nav) { paintGate(Number(nav.dataset.slide)); return; }
   if (event.target.closest("#gateEnter") || event.target.closest("#gateExplore")) openLogin();
